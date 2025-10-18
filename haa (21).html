@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>وضعیت آب و هوا</title>
+</head>
+<body>
+    <h1>وضعیت آب و هوا</h1>
+    <input type="text" id="city" placeholder="نام شهر را وارد کنید">
+    <button onclick="getWeather()">دریافت وضعیت</button>
+    <div id="weather"></div>
+
+    <script>
+        async function getWeather() {
+            const city = document.getElementById('city').value;
+            const apiKey = '7274487227:j0eBk435pbyg@CodeSazan_APIManager_Bot'; // کلید API خود را اینجا وارد کنید
+            const url = `https://api.codesazan.ir/Weather?key=${apiKey}&type=Weather&city=${city}`;
+
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                document.getElementById('weather').innerHTML = `
+                    <p>شهر: ${data.city}</p>
+                    <p>دما: ${data.temperature}°C</p>
+                    <p>وضعیت: ${data.weather}</p>
+                    <p>رطوبت: ${data.humidity}%</p>
+                    <p>باد: ${data.wind} km/h</p>
+                `;
+            } catch (error) {
+                document.getElementById('weather').innerHTML = 'خطا در دریافت اطلاعات';
+            }
+        }
+    </script>
+</body>
+</html>
