@@ -1,8 +1,85 @@
 <!DOCTYPE html>
 <html lang="fa">
-                document.getElementById('weather').innerHTML = 'خطا در دریافت اطلاعات';
-            }
-        }
-    </script>
+<head>
+<meta charset="UTF-8">
+<title>کوتاه کننده لینک</title>
+<style>
+body{
+  font-family:sans-serif;
+  direction:rtl;
+  background:#f3f3f3;
+  text-align:center;
+  padding:20px;
+}
+input{
+  width:90%;
+  max-width:400px;
+  padding:12px;
+  font-size:14px;
+  border-radius:8px;
+  border:1px solid #ccc;
+}
+button{
+  margin-top:10px;
+  padding:12px 20px;
+  font-size:15px;
+  border:none;
+  border-radius:8px;
+  background:#2196f3;
+  color:white;
+}
+.result{
+  margin-top:15px;
+  background:white;
+  padding:12px;
+  border-radius:8px;
+  word-break:break-all;
+}
+</style>
+</head>
+<body>
+
+<h3>🔗 کوتاه کننده لینک واقعی</h3>
+
+<input id="link" placeholder="لینک را وارد کنید">
+
+<br>
+<button onclick="shorten()">کوتاه کن</button>
+
+<div class="result" id="out"></div>
+
+<script>
+function shorten(){
+  let url = document.getElementById("link").value.trim();
+  if(!url){
+    alert("لینک وارد کن");
+    return;
+  }
+
+  document.getElementById("out").innerHTML = "در حال پردازش...";
+
+  fetch("https://api.shrtco.de/v2/shorten?url=" + encodeURIComponent(url))
+    .then(res => res.json())
+    .then(data => {
+      if(data.ok){
+        let short = data.result.full_short_link;
+        document.getElementById("out").innerHTML =
+          "لینک کوتاه:<br><b>"+short+
+          "</b><br><br><button onclick=\"copy('"+short+"')\">کپی</button>";
+      }else{
+        document.getElementById("out").innerHTML = "خطا در کوتاه کردن لینک";
+      }
+    })
+    .catch(()=>{
+      document.getElementById("out").innerHTML = "خطای اتصال به API";
+    });
+}
+
+function copy(text){
+  navigator.clipboard.writeText(text);
+  alert("کپی شد");
+}
+</script>
+
 </body>
-</html>
+  </html>
