@@ -184,19 +184,34 @@ html,body{
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 
 <script>
-function lockLandscape() {
-  // ایتا فول‌اسکرین + قفل Landscape
+// فول‌اسکرین + قفل Landscape
+function activateFullscreenAndLandscape(){
   if(window.Eitaa && Eitaa.WebApp){
-    if(Eitaa.WebApp.enableFullScreen) Eitaa.WebApp.enableFullScreen(); // فول‌اسکرین ایتا
-    if(Eitaa.WebApp.lockOrientation) Eitaa.WebApp.lockOrientation();  // قفل Landscape
+    if(Eitaa.WebApp.enableFullScreen){
+      Eitaa.WebApp.enableFullScreen().then(()=>console.log("Fullscreen enabled")).catch(()=>console.warn("Fullscreen failed"));
+    }
+    if(Eitaa.WebApp.lockOrientation){
+      Eitaa.WebApp.lockOrientation().then(()=>console.log("Landscape locked")).catch(()=>console.warn("Orientation lock failed"));
+    }
   }
-
   // fallback وب
   if(screen.orientation && screen.orientation.lock){
     screen.orientation.lock("landscape").catch(()=>{});
   }
 }
 
+// تعامل کاربر برای فعال شدن فول‌اسکرین
+document.addEventListener("touchstart", activateFullscreenAndLandscape, { once:true });
+document.addEventListener("click", activateFullscreenAndLandscape, { once:true });
+
+// لودر و گیم
+setTimeout(function(){
+  document.getElementById('loader').style.display='none';
+  document.getElementById('game-frame').src="https://www.madkidgames.com/full/jungle-hill-climb-racing";
+  document.getElementById('game-container').style.display='block';
+},8500);
+
+// بررسی جهت گوشی
 function checkOrientation(){
   const hint = document.getElementById("rotate-hint");
   if(window.matchMedia("(orientation: landscape)").matches){
@@ -205,19 +220,8 @@ function checkOrientation(){
     hint.style.display="flex";
   }
 }
-
-document.addEventListener("touchstart", lockLandscape, { once:true });
-document.addEventListener("click", lockLandscape, { once:true });
 window.addEventListener("orientationchange", checkOrientation);
 window.addEventListener("resize", checkOrientation);
-
-setTimeout(function(){
-  document.getElementById('loader').style.display='none';
-  document.getElementById('game-frame').src="https://www.madkidgames.com/full/jungle-hill-climb-racing";
-  document.getElementById('game-container').style.display='block';
-  lockLandscape();
-  checkOrientation();
-},8500);
 </script>
 
 </body>
