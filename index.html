@@ -3,225 +3,98 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>در حال ورود...</title>
+      content="width=device-width, height=device-height,
+               initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+<title>Eitaa MiniApp</title>
 
 <style>
-html,body{
+*{
   margin:0;
   padding:0;
+  box-sizing:border-box;
+}
+
+html, body{
   width:100%;
   height:100%;
   overflow:hidden;
-  background:#121621;
-  font-family: Vazir, sans-serif;
+  background:#000;
 }
 
-/* Loader */
-.loader-wrapper{
+/* فول‌اسکرین واقعی WebView */
+#app{
   position:fixed;
   inset:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  background:#121621;
-  text-align:center;
-  padding:20px;
-  z-index:1000;
-}
-
-.background-particles{
-  position:absolute;
-  inset:0;
-  background-image:radial-gradient(circle, #ff6a00 1px, transparent 1px);
-  background-size:20px 20px;
-  animation:moveBg 12s linear infinite;
-  opacity:.25;
-  z-index:1;
-}
-
-@keyframes moveBg{
-  0%{transform:translate(0,0)}
-  50%{transform:translate(-50%,-50%)}
-  100%{transform:translate(0,0)}
-}
-
-.loader-title{
-  color:#00bfff;
-  font-size:22px;
-  line-height:1.9;
-  margin-bottom:24px;
-  text-shadow:0 0 10px #2760fe;
-  z-index:2;
-}
-
-.glow-loader{
-  width:120px;
-  height:120px;
-  border-radius:50%;
-  background:linear-gradient(45deg,#2760fe,#2f71ff);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  animation:glow 2s ease-in-out infinite;
-  z-index:2;
-}
-
-.glow-loader span{
-  color:#00bfff;
-  font-size:15px;
-  font-weight:bold;
-}
-
-@keyframes glow{
-  0%{box-shadow:0 0 5px #2760fe}
-  50%{box-shadow:0 0 25px #2f71ff}
-  100%{box-shadow:0 0 5px #2760fe}
-}
-
-/* Game container */
-#game-container{
-  display:none;
-  width:100%;
+  width:100vw;
   height:100vh;
-}
-
-#game-container iframe{
-  width:100%;
-  height:100vh;
-  border:none;
-}
-
-/* Rotate hint فول‌اسکرین نئونی */
-#rotate-hint{
-  position:fixed;
-  inset:0;
-  background: radial-gradient(circle at center, #0f0c29, #302b63, #24243e);
   display:flex;
-  justify-content:center;
   align-items:center;
-  text-align:center;
-  z-index:99999;
-  overflow:hidden;
+  justify-content:center;
+  background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
 }
 
-/* خطوط نئونی متحرک */
-#rotate-hint::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background: repeating-linear-gradient(
-    45deg,
-    rgba(0,255,255,0.08) 0px,
-    rgba(0,255,255,0.08) 2px,
-    transparent 2px,
-    transparent 4px
-  );
-  animation: neonBg 3s linear infinite;
-}
-
-@keyframes neonBg{
-  0%{background-position:0 0;}
-  100%{background-position:100px 100px;}
-}
-
-/* کادر کوچک نئونی */
+/* کادر نئونی */
 .neon-box{
-  padding: 30px 25px;
-  border: 2px solid #00fff7;
-  border-radius: 20px;
-  box-shadow: 0 0 20px #00fff7, 0 0 40px #00fff7, 0 0 60px #00fff7;
-  backdrop-filter: blur(6px);
-  background: rgba(0, 0, 0, 0.25);
-  max-width: 80%;
-  animation: pulse 2s infinite;
-  z-index:2;
+  padding:28px 24px;
+  border-radius:18px;
+  border:2px solid #00fff7;
+  box-shadow:
+    0 0 10px #00fff7,
+    0 0 25px #00fff7,
+    0 0 50px #00fff7;
+  text-align:center;
+  animation:pulse 2s infinite;
 }
 
 .neon-box h2{
   color:#00fff7;
   font-size:22px;
-  text-shadow: 0 0 5px #00fff7, 0 0 10px #00fff7, 0 0 20px #00fff7;
-  margin:0;
+  text-shadow:
+    0 0 5px #00fff7,
+    0 0 15px #00fff7;
 }
 
 @keyframes pulse{
-  0%{box-shadow:0 0 20px #00fff7, 0 0 40px #00fff7, 0 0 60px #00fff7;}
-  50%{box-shadow:0 0 30px #00fff7, 0 0 60px #00fff7, 0 0 90px #00fff7;}
-  100%{box-shadow:0 0 20px #00fff7, 0 0 40px #00fff7, 0 0 60px #00fff7;}
+  0%{box-shadow:0 0 10px #00fff7}
+  50%{box-shadow:0 0 35px #00fff7}
+  100%{box-shadow:0 0 10px #00fff7}
 }
 
 /* وقتی افقی شد، پیام مخفی */
-@media screen and (orientation: landscape){
-  #rotate-hint{display:none;}
+@media (orientation: landscape){
+  .neon-box{display:none;}
 }
 </style>
 </head>
+
 <body>
 
-<div class="loader-wrapper" id="loader">
-  <div class="background-particles"></div>
-  <h1 class="loader-title">
-    آژانس خلاقیت پروژه دات آی آر
-  </h1>
-  <div class="glow-loader"><span>پروژه دات آی آر</span></div>
-</div>
-
-<div id="rotate-hint">
+<div id="app">
   <div class="neon-box">
-    <h2>📱 لطفاً گوشی را افقی کنید</h2>
+    <h2>📱 گوشی را افقی کنید</h2>
   </div>
-</div>
-
-<div id="game-container">
-  <iframe id="game-frame" src="" allowfullscreen scrolling="no"></iframe>
 </div>
 
 <!-- SDK رسمی ایتا -->
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 
 <script>
-// فول‌اسکرین + قفل Landscape
-function activateFullscreenAndLandscape(){
+function maxFullscreen(){
   if(window.Eitaa && Eitaa.WebApp){
+    Eitaa.WebApp.expand();          // بیشترین فضای ممکن
     if(Eitaa.WebApp.enableFullScreen){
-      Eitaa.WebApp.enableFullScreen().then(()=>console.log("Fullscreen enabled")).catch(()=>console.warn("Fullscreen failed"));
+      Eitaa.WebApp.enableFullScreen();
     }
     if(Eitaa.WebApp.lockOrientation){
-      Eitaa.WebApp.lockOrientation().then(()=>console.log("Landscape locked")).catch(()=>console.warn("Orientation lock failed"));
+      Eitaa.WebApp.lockOrientation();
     }
   }
-  // fallback وب
-  if(screen.orientation && screen.orientation.lock){
-    screen.orientation.lock("landscape").catch(()=>{});
-  }
 }
 
-// تعامل کاربر برای فعال شدن فول‌اسکرین
-document.addEventListener("touchstart", activateFullscreenAndLandscape, { once:true });
-document.addEventListener("click", activateFullscreenAndLandscape, { once:true });
-
-// لودر و گیم
-setTimeout(function(){
-  document.getElementById('loader').style.display='none';
-  document.getElementById('game-frame').src="https://www.madkidgames.com/full/jungle-hill-climb-racing";
-  document.getElementById('game-container').style.display='block';
-},8500);
-
-// بررسی جهت گوشی
-function checkOrientation(){
-  const hint = document.getElementById("rotate-hint");
-  if(window.matchMedia("(orientation: landscape)").matches){
-    hint.style.display="none";
-  } else {
-    hint.style.display="flex";
-  }
-}
-window.addEventListener("orientationchange", checkOrientation);
-window.addEventListener("resize", checkOrientation);
+// فقط با تعامل کاربر فعال می‌شود
+document.addEventListener("click", maxFullscreen, {once:true});
+document.addEventListener("touchstart", maxFullscreen, {once:true});
 </script>
 
 </body>
