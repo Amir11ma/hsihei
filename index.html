@@ -2,84 +2,199 @@
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
-<title>کوتاه کننده لینک</title>
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>در حال ورود...</title>
+
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+
 <style>
-body{
-  font-family:sans-serif;
-  direction:rtl;
-  background:#f3f3f3;
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#121621;
+  font-family: Vazir, sans-serif;
+}
+
+.loader-wrapper{
+  position:fixed;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:#121621;
   text-align:center;
   padding:20px;
+  z-index:1000;
 }
-input{
-  width:90%;
-  max-width:400px;
-  padding:12px;
-  font-size:14px;
-  border-radius:8px;
-  border:1px solid #ccc;
+
+.background-particles{
+  position:absolute;
+  inset:0;
+  background-image:radial-gradient(circle, #ff6a00 1px, transparent 1px);
+  background-size:20px 20px;
+  animation:moveBg 12s linear infinite;
+  opacity:.25;
+  z-index:1;
 }
-button{
-  margin-top:10px;
-  padding:12px 20px;
+
+@keyframes moveBg{
+  0%{transform:translate(0,0)}
+  50%{transform:translate(-50%,-50%)}
+  100%{transform:translate(0,0)}
+}
+
+.loader-title{
+  color:#00bfff;
+  font-size:22px;
+  line-height:1.9;
+  margin-bottom:24px;
+  text-shadow:0 0 10px #2760fe;
+  z-index:2;
+}
+
+.glow-loader{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  background:linear-gradient(45deg,#2760fe,#2f71ff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  animation:glow 2s ease-in-out infinite;
+  z-index:2;
+}
+
+.glow-loader span{
+  color:#00bfff;
   font-size:15px;
-  border:none;
-  border-radius:8px;
-  background:#2196f3;
-  color:white;
+  font-weight:bold;
 }
-.result{
-  margin-top:15px;
-  background:white;
-  padding:12px;
-  border-radius:8px;
-  word-break:break-all;
+
+@keyframes glow{
+  0%{box-shadow:0 0 5px #2760fe}
+  50%{box-shadow:0 0 25px #2f71ff}
+  100%{box-shadow:0 0 5px #2760fe}
+}
+
+#game-container{
+  display:none;
+  width:100%;
+  height:100vh;
+}
+
+#game-container iframe{
+  width:100%;
+  height:100vh;
+  border:none;
+}
+
+#rotate-hint{
+  position:fixed;
+  inset:0;
+  background:#121621;
+  color:#00bfff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  font-size:20px;
+  padding:20px;
+  z-index:99999;
+}
+
+@media screen and (orientation: landscape){
+  #rotate-hint{
+    display:none;
+  }
+}
+
+@media(max-width:600px){
+  .loader-title{font-size:17px}
+  .glow-loader{width:100px;height:100px}
+  .glow-loader span{font-size:13px}
 }
 </style>
 </head>
+
 <body>
 
-<h3>🔗 کوتاه کننده لینک واقعی</h3>
+<div class="loader-wrapper" id="loader">
+  <div class="background-particles"></div>
 
-<input id="link" placeholder="لینک را وارد کنید">
+  <h1 class="loader-title">
+    آژانس خلاقیت پروژه دات آی آر<br>
+    پلتفرم جامع خدمات دیجیتال
+  </h1>
 
-<br>
-<button onclick="shorten()">کوتاه کن</button>
+  <div class="glow-loader">
+    <span>پروژه دات آی آر</span>
+  </div>
+</div>
 
-<div class="result" id="out"></div>
+<div id="rotate-hint">
+  📱 لطفاً گوشی را افقی کنید
+</div>
 
+<!-- گیم -->
+<div id="game-container">
+  <iframe
+    id="game-frame"
+    src=""
+    allowfullscreen
+    scrolling="no">
+  </iframe>
+</div>
+
+<script src="https://cdn.jsdelivr.net/gh/eitaa-miniapp/js-sdk/dist/miniapp.min.js"></script>
 <script>
-function shorten(){
-  let url = document.getElementById("link").value.trim();
-  if(!url){
-    alert("لینک وارد کن");
-    return;
+function lockLandscape() {
+  // اول تلاش برای قفل با MiniApp SDK ایتا
+  if (typeof miniApp !== "undefined" && miniApp.setScreenOrientation) {
+    miniApp.setScreenOrientation(miniApp.ScreenOrientation.LOCK_LANDSCAPE)
+      .then(() => console.log("Landscape requested"))
+      .catch(() => console.warn("Orientation lock failed"));
   }
 
-  document.getElementById("out").innerHTML = "در حال پردازش...";
-
-  fetch("https://api.shrtco.de/v2/shorten?url=" + encodeURIComponent(url))
-    .then(res => res.json())
-    .then(data => {
-      if(data.ok){
-        let short = data.result.full_short_link;
-        document.getElementById("out").innerHTML =
-          "لینک کوتاه:<br><b>"+short+
-          "</b><br><br><button onclick=\"copy('"+short+"')\">کپی</button>";
-      }else{
-        document.getElementById("out").innerHTML = "خطا در کوتاه کردن لینک";
-      }
-    })
-    .catch(()=>{
-      document.getElementById("out").innerHTML = "خطای اتصال به API";
-    });
+  // fallback مرورگر معمولی
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock("landscape").catch(() => {});
+  }
 }
 
-function copy(text){
-  navigator.clipboard.writeText(text);
-  alert("کپی شد");
+function checkOrientation() {
+  const hint = document.getElementById("rotate-hint");
+  if (window.matchMedia("(orientation: landscape)").matches) {
+    hint.style.display = "none";
+  } else {
+    hint.style.display = "flex";
+  }
 }
+
+// تعامل کاربر برای موبایل (مجبور)
+document.addEventListener("touchstart", lockLandscape, { once: true });
+document.addEventListener("click", lockLandscape, { once: true });
+
+// تغییرات چرخش گوشی
+window.addEventListener("orientationchange", checkOrientation);
+window.addEventListener("resize", checkOrientation);
+
+setTimeout(function () {
+  document.getElementById('loader').style.display = 'none';
+
+  document.getElementById('game-frame').src =
+    "https://www.madkidgames.com/full/jungle-hill-climb-racing";
+
+  document.getElementById('game-container').style.display = 'block';
+
+  lockLandscape();
+  checkOrientation();
+}, 8500);
 </script>
 
 </body>
-  </html>
+</html>
