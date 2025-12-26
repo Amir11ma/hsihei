@@ -19,6 +19,7 @@ html,body{
   font-family: Vazir, sans-serif;
 }
 
+/* Loader */
 .loader-wrapper{
   position:fixed;
   inset:0;
@@ -81,6 +82,7 @@ html,body{
   100%{box-shadow:0 0 5px #2760fe}
 }
 
+/* Game container */
 #game-container{
   display:none;
   width:100%;
@@ -93,107 +95,129 @@ html,body{
   border:none;
 }
 
+/* Rotate hint فول‌اسکرین نئونی */
 #rotate-hint{
   position:fixed;
   inset:0;
-  background:#121621;
-  color:#00bfff;
+  background: radial-gradient(circle at center, #0f0c29, #302b63, #24243e);
   display:flex;
   justify-content:center;
   align-items:center;
   text-align:center;
-  font-size:20px;
-  padding:20px;
   z-index:99999;
+  overflow:hidden;
 }
 
+/* خطوط نئونی متحرک */
+#rotate-hint::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background: repeating-linear-gradient(
+    45deg,
+    rgba(0,255,255,0.08) 0px,
+    rgba(0,255,255,0.08) 2px,
+    transparent 2px,
+    transparent 4px
+  );
+  animation: neonBg 3s linear infinite;
+}
+
+@keyframes neonBg{
+  0%{background-position:0 0;}
+  100%{background-position:100px 100px;}
+}
+
+/* کادر کوچک نئونی */
+.neon-box{
+  padding: 30px 25px;
+  border: 2px solid #00fff7;
+  border-radius: 20px;
+  box-shadow: 0 0 20px #00fff7, 0 0 40px #00fff7, 0 0 60px #00fff7;
+  backdrop-filter: blur(6px);
+  background: rgba(0, 0, 0, 0.25);
+  max-width: 80%;
+  animation: pulse 2s infinite;
+  z-index:2;
+}
+
+.neon-box h2{
+  color:#00fff7;
+  font-size:22px;
+  text-shadow: 0 0 5px #00fff7, 0 0 10px #00fff7, 0 0 20px #00fff7;
+  margin:0;
+}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 20px #00fff7, 0 0 40px #00fff7, 0 0 60px #00fff7;}
+  50%{box-shadow:0 0 30px #00fff7, 0 0 60px #00fff7, 0 0 90px #00fff7;}
+  100%{box-shadow:0 0 20px #00fff7, 0 0 40px #00fff7, 0 0 60px #00fff7;}
+}
+
+/* وقتی افقی شد، پیام مخفی */
 @media screen and (orientation: landscape){
-  #rotate-hint{
-    display:none;
-  }
-}
-
-@media(max-width:600px){
-  .loader-title{font-size:17px}
-  .glow-loader{width:100px;height:100px}
-  .glow-loader span{font-size:13px}
+  #rotate-hint{display:none;}
 }
 </style>
 </head>
-
 <body>
 
 <div class="loader-wrapper" id="loader">
   <div class="background-particles"></div>
-
   <h1 class="loader-title">
-    آژانس خلاقیت پروژه دات آی آر<br>
-    پلتفرم جامع خدمات دیجیتال
+    آژانس خلاقیت پروژه دات آی آر
   </h1>
-
-  <div class="glow-loader">
-    <span>پروژه دات آی آر</span>
-  </div>
+  <div class="glow-loader"><span>پروژه دات آی آر</span></div>
 </div>
 
 <div id="rotate-hint">
-  📱 لطفاً گوشی را افقی کنید
+  <div class="neon-box">
+    <h2>📱 لطفاً گوشی را افقی کنید</h2>
+  </div>
 </div>
 
-<!-- گیم -->
 <div id="game-container">
-  <iframe
-    id="game-frame"
-    src=""
-    allowfullscreen
-    scrolling="no">
-  </iframe>
+  <iframe id="game-frame" src="" allowfullscreen scrolling="no"></iframe>
 </div>
 
-<script src="https://cdn.jsdelivr.net/gh/eitaa-miniapp/js-sdk/dist/miniapp.min.js"></script>
+<!-- SDK رسمی ایتا -->
+<script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
+
 <script>
 function lockLandscape() {
-  // اول تلاش برای قفل با MiniApp SDK ایتا
-  if (typeof miniApp !== "undefined" && miniApp.setScreenOrientation) {
-    miniApp.setScreenOrientation(miniApp.ScreenOrientation.LOCK_LANDSCAPE)
-      .then(() => console.log("Landscape requested"))
-      .catch(() => console.warn("Orientation lock failed"));
+  // ایتا فول‌اسکرین + قفل Landscape
+  if(window.Eitaa && Eitaa.WebApp){
+    if(Eitaa.WebApp.enableFullScreen) Eitaa.WebApp.enableFullScreen(); // فول‌اسکرین ایتا
+    if(Eitaa.WebApp.lockOrientation) Eitaa.WebApp.lockOrientation();  // قفل Landscape
   }
 
-  // fallback مرورگر معمولی
-  if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock("landscape").catch(() => {});
+  // fallback وب
+  if(screen.orientation && screen.orientation.lock){
+    screen.orientation.lock("landscape").catch(()=>{});
   }
 }
 
-function checkOrientation() {
+function checkOrientation(){
   const hint = document.getElementById("rotate-hint");
-  if (window.matchMedia("(orientation: landscape)").matches) {
-    hint.style.display = "none";
+  if(window.matchMedia("(orientation: landscape)").matches){
+    hint.style.display="none";
   } else {
-    hint.style.display = "flex";
+    hint.style.display="flex";
   }
 }
 
-// تعامل کاربر برای موبایل (مجبور)
-document.addEventListener("touchstart", lockLandscape, { once: true });
-document.addEventListener("click", lockLandscape, { once: true });
-
-// تغییرات چرخش گوشی
+document.addEventListener("touchstart", lockLandscape, { once:true });
+document.addEventListener("click", lockLandscape, { once:true });
 window.addEventListener("orientationchange", checkOrientation);
 window.addEventListener("resize", checkOrientation);
 
-setTimeout(function () {
-  document.getElementById('loader').style.display = 'none';
-
-  document.getElementById('game-frame').src =
-    "https://www.madkidgames.com/full/jungle-hill-climb-racing";
-
-  document.getElementById('game-container').style.display = 'block';
-
+setTimeout(function(){
+  document.getElementById('loader').style.display='none';
+  document.getElementById('game-frame').src="https://www.madkidgames.com/full/jungle-hill-climb-racing";
+  document.getElementById('game-container').style.display='block';
   lockLandscape();
   checkOrientation();
-}, 8500);
+},8500);
 </script>
 
 </body>
