@@ -3,170 +3,50 @@
 <head>
 <meta charset="UTF-8">
 <title>Popup Test</title>
-
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
-
 <script>
 document.addEventListener("DOMContentLoaded", function () {
   document.body.addEventListener("click", function (e) {
     let target = e.target;
-    while (target && target.tagName !== "A") {
-      target = target.parentElement;
-    }
+    while (target && target.tagName !== "A") target = target.parentElement;
     if (!target) return;
-
     let href = target.getAttribute("href");
     if (!href) return;
-
     if (href.includes("eitaa.com")) {
       e.preventDefault();
-
       if (window.Eitaa && Eitaa.WebApp && Eitaa.WebApp.openEitaaLink) {
         Eitaa.WebApp.openEitaaLink("https://eitaa.com/Projee_ir2");
-      } else {
-        window.location.href = href;
-      }
+      } else window.location.href = href;
     }
   });
 });
 </script>
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap');
-
-body{
-  margin:0;
-  font-family: Vazirmatn, sans-serif;
-}
-
-/* Overlay */
-#projee-popup-overlay{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.65);
-  z-index: 99999;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-#projee-popup-overlay:target{
-  display: flex;
-}
-
-/* Neon Border */
-.neon-border{
-  position: absolute;
-  width: 96vw;
-  max-width: 520px;
-  height: 96vh;
-  border-radius: 26px;
-  background: linear-gradient(90deg,#ffee58,#00e5ff,#ffee58);
-  background-size: 300% 300%;
-  animation: neonMove 4s linear infinite;
-  filter: blur(2px);
-}
-
-/* Popup */
-.projee-popup{
-  position: relative;
-  width: 94vw;
-  max-width: 500px;
-  max-height: 94vh;
-  background: linear-gradient(135deg,#1a2a6c,#5b1b8f);
-  border-radius: 22px;
-  padding: 20px;
-  overflow-y: auto;
-  text-align: center;
-  z-index: 2;
-}
-
-.popup-close{
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  font-size: 32px;
-  color: #fff;
-  text-decoration: none;
-}
-
-.neon-title{
-  font-size: 26px;
-  font-weight: 900;
-  color: #fff;
-  margin-bottom: 12px;
-  text-shadow: 0 0 12px #00e5ff;
-}
-
-.popup-image{
-  max-width: 85%;
-  margin: 10px auto;
-  display: block;
-}
-
-.popup-text{
-  background: rgba(0,0,0,.35);
-  border-radius: 14px;
-  padding: 16px;
-  color: #f1f1f1;
-  font-size: 18px;
-  line-height: 1.9;
-  margin: 16px 0;
-  direction: rtl;
-  text-align: right;
-}
-
-.popup-btn{
-  display: block;
-  margin: 12px auto 0;
-  padding: 16px;
-  width: 90%;
-  background: linear-gradient(90deg,#00e5ff,#ffee58);
-  color: #000;
-  font-weight: 900;
-  border-radius: 40px;
-  text-decoration: none;
-  box-shadow: 0 0 60px rgba(255,238,88,.8);
-}
-
-@keyframes neonMove{
-  0%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 50%;}
-}
+body{margin:0;font-family: Vazirmatn, sans-serif;}
+#projee-popup-overlay{position: fixed;inset: 0;background: rgba(0,0,0,.65);z-index: 99999;display: none;align-items: center;justify-content: center;}
+#projee-popup-overlay:target{display: flex;}
+.neon-border{position: absolute;width: 96vw;max-width: 520px;height: 96vh;border-radius: 26px;background: linear-gradient(90deg,#ffee58,#00e5ff,#ffee58);background-size: 300% 300%;animation: neonMove 4s linear infinite;filter: blur(2px);}
+.projee-popup{position: relative;width: 94vw;max-width: 500px;max-height: 94vh;background: linear-gradient(135deg,#1a2a6c,#5b1b8f);border-radius: 22px;padding: 20px;overflow-y: auto;text-align: center;z-index: 2;}
+.popup-close{position: absolute;top: 10px;right: 14px;font-size: 32px;color: #fff;text-decoration: none;}
+.neon-title{font-size: 26px;font-weight: 900;color: #fff;margin-bottom: 12px;text-shadow: 0 0 12px #00e5ff;}
+.popup-image{max-width: 85%;margin: 10px auto;display: block;}
+.popup-text{background: rgba(0,0,0,.35);border-radius: 14px;padding: 16px;color: #f1f1f1;font-size: 18px;line-height: 1.9;margin: 16px 0;direction: rtl;text-align: right;}
+.popup-btn{display: block;margin: 12px auto 0;padding: 16px;width: 90%;background: linear-gradient(90deg,#00e5ff,#ffee58);color: #000;font-weight: 900;border-radius: 40px;text-decoration: none;box-shadow: 0 0 60px rgba(255,238,88,.8);}
+@keyframes neonMove{0%{background-position:0% 50%;}50%{background-position:100% 50%;}100%{background-position:0% 50%;}}
 </style>
 </head>
-
 <body>
-
-<p style="text-align:center;margin-top:40px;">
-  <a href="#projee-popup-overlay">باز شدن پاپ‌آپ</a>
-</p>
-
+<p style="text-align:center;margin-top:40px;"><a href="#projee-popup-overlay">باز شدن پاپ‌آپ</a></p>
 <div id="projee-popup-overlay">
   <div class="neon-border"></div>
-
   <div class="projee-popup">
     <a href="#" class="popup-close">×</a>
-
     <h2 class="neon-title">سفارش پروژه</h2>
-
-    <img
-      src="https://www.projee.ir/wp-content/uploads/2025/12/marketing-slider-pic-1.webp"
-      class="popup-image"
-      alt="سفارش پروژه"
-    >
-
-    <div class="popup-text">
-      انجام انواع پروژه‌های طراحی سایت، برنامه‌نویسی، خدمات دانشجویی و امور اینترنتی
-      به‌صورت آنلاین، سریع و مطمئن.
-    </div>
-
-    <a href="https://eitaa.com/Projee_ir2" class="popup-btn">
-      تماس با پشتیبان
-    </a>
+    <img src="https://www.projee.ir/wp-content/uploads/2025/12/marketing-slider-pic-1.webp" class="popup-image" alt="سفارش پروژه">
+    <div class="popup-text">انجام انواع پروژه‌های طراحی سایت، برنامه‌نویسی، خدمات دانشجویی و امور اینترنتی به‌صورت آنلاین، سریع و مطمئن.</div>
+    <a href="https://eitaa.com/Projee_ir2" class="popup-btn">تماس با پشتیبان</a>
   </div>
 </div>
-
 </body>
 </html>
