@@ -3,7 +3,33 @@
 <head>
 <meta charset="UTF-8">
 <title>Popup Test</title>
+
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.body.addEventListener("click", function (e) {
+    let target = e.target;
+    while (target && target.tagName !== "A") {
+      target = target.parentElement;
+    }
+    if (!target) return;
+
+    let href = target.getAttribute("href");
+    if (!href) return;
+
+    if (href.includes("eitaa.com")) {
+      e.preventDefault();
+
+      if (window.Eitaa && Eitaa.WebApp && Eitaa.WebApp.openEitaaLink) {
+        Eitaa.WebApp.openEitaaLink("https://eitaa.com/Projee_ir2");
+      } else {
+        window.location.href = href;
+      }
+    }
+  });
+});
+</script>
 
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap');
@@ -11,8 +37,6 @@
 body{
   margin:0;
   font-family: Vazirmatn, sans-serif;
-  background:#121212;
-  overflow-x:hidden;
 }
 
 /* Overlay */
@@ -20,10 +44,14 @@ body{
   position: fixed;
   inset: 0;
   background: rgba(0,0,0,.65);
-  z-index: 9999;
+  z-index: 99999;
   display: none;
   align-items: center;
   justify-content: center;
+}
+
+#projee-popup-overlay:target{
+  display: flex;
 }
 
 /* Neon Border */
@@ -53,17 +81,15 @@ body{
   z-index: 2;
 }
 
-/* Close */
 .popup-close{
   position: absolute;
   top: 10px;
   right: 14px;
   font-size: 32px;
   color: #fff;
-  cursor:pointer;
+  text-decoration: none;
 }
 
-/* Title */
 .neon-title{
   font-size: 26px;
   font-weight: 900;
@@ -72,27 +98,24 @@ body{
   text-shadow: 0 0 12px #00e5ff;
 }
 
-/* Image */
 .popup-image{
   max-width: 85%;
   margin: 10px auto;
   display: block;
 }
 
-/* Text */
 .popup-text{
   background: rgba(0,0,0,.35);
   border-radius: 14px;
   padding: 16px;
   color: #f1f1f1;
-  font-size: 22px;
+  font-size: 18px;
   line-height: 1.9;
   margin: 16px 0;
   direction: rtl;
   text-align: right;
 }
 
-/* Button */
 .popup-btn{
   display: block;
   margin: 12px auto 0;
@@ -103,7 +126,6 @@ body{
   font-weight: 900;
   border-radius: 40px;
   text-decoration: none;
-  text-align:center;
   box-shadow: 0 0 60px rgba(255,238,88,.8);
 }
 
@@ -114,69 +136,37 @@ body{
 }
 </style>
 </head>
+
 <body>
 
 <p style="text-align:center;margin-top:40px;">
-  <button id="open-popup">باز شدن پاپ‌آپ</button>
+  <a href="#projee-popup-overlay">باز شدن پاپ‌آپ</a>
 </p>
 
-<!-- Popup -->
 <div id="projee-popup-overlay">
   <div class="neon-border"></div>
+
   <div class="projee-popup">
-    <span class="popup-close" id="close-popup">×</span>
+    <a href="#" class="popup-close">×</a>
+
     <h2 class="neon-title">سفارش پروژه</h2>
-    <img src="https://www.projee.ir/wp-content/uploads/2025/12/marketing-slider-pic-1.webp"
-         class="popup-image" alt="سفارش پروژه">
+
+    <img
+      src="https://www.projee.ir/wp-content/uploads/2025/12/marketing-slider-pic-1.webp"
+      class="popup-image"
+      alt="سفارش پروژه"
+    >
+
     <div class="popup-text">
-      سفارش پروژه های شما پس از شرح نیازها و با توجه به هویت کسب و کار شما پس از تایید کارشناسان ،پروژه دات آی آر به فریلنسرها سپرده خواهد شد
-      <br><br>
-      طراحی سایت
-      <br><br>
-      برنامه نویسی
-      <br><br>
-      کافی‌نت آنلاین
-      <br><br>
-      انجام کلیه امور اینترنتی، اداری و دانشجویی به‌صورت آنلاین، سریع، مطمئن همراه شما.
+      انجام انواع پروژه‌های طراحی سایت، برنامه‌نویسی، خدمات دانشجویی و امور اینترنتی
+      به‌صورت آنلاین، سریع و مطمئن.
     </div>
-    <a href="https://eitaa.com/Projee_ir2" target="_blank" class="popup-btn">تماس با کارشناس و ثبت پروژه</a>
+
+    <a href="https://eitaa.com/Projee_ir2" class="popup-btn">
+      تماس با پشتیبان
+    </a>
   </div>
 </div>
-
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-
-  const overlay = document.getElementById("projee-popup-overlay");
-  const openBtn = document.getElementById("open-popup");
-  const closeBtn = document.getElementById("close-popup");
-
-  openBtn.addEventListener("click", ()=> overlay.style.display="flex");
-  closeBtn.addEventListener("click", ()=> overlay.style.display="none");
-  overlay.addEventListener("click", (e)=>{
-    if(e.target === overlay) overlay.style.display="none";
-  });
-
-  // لینک Eitaa
-  document.body.addEventListener("click", function(e) {
-    let target = e.target;
-    while (target && target.tagName !== "A") target = target.parentElement;
-    if(!target) return;
-
-    let href = target.getAttribute("href");
-    if(!href) return;
-
-    if(href.includes("eitaa.com")){
-      e.preventDefault();
-      if(typeof openEitaaLink === "function"){
-        openEitaaLink("https://eitaa.com/Projee_ir2");
-      } else {
-        window.location.href = href;
-      }
-    }
-  });
-
-});
-</script>
 
 </body>
 </html>
