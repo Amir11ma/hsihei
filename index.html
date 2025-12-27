@@ -4,33 +4,102 @@
 <meta charset="UTF-8">
 <meta name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>باز کردن کانال ایتا</title>
+<title>کانال BGM_STUDIO</title>
+
+<style>
+html, body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  font-family: Vazir, sans-serif;
+  background: radial-gradient(circle, #0f2027, #203a43, #2c5364);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.neon-box{
+  padding: 30px 25px;
+  border-radius: 20px;
+  border: 2px solid #00fff7;
+  box-shadow: 0 0 20px #00fff7, 0 0 40px #00fff7, 0 0 60px #00fff7;
+  text-align:center;
+  animation: pulse 2s infinite;
+  background: rgba(0,0,0,0.25);
+}
+
+.neon-box h2{
+  color:#00fff7;
+  font-size:22px;
+  text-shadow: 0 0 5px #00fff7, 0 0 15px #00fff7;
+  margin-bottom:20px;
+}
+
+.neon-button{
+  padding: 12px 30px;
+  font-size:18px;
+  color:#00fff7;
+  background: transparent;
+  border: 2px solid #00fff7;
+  border-radius:12px;
+  cursor:pointer;
+  text-decoration:none;
+  transition: 0.3s;
+  box-shadow: 0 0 10px #00fff7;
+}
+
+.neon-button:hover{
+  background:#00fff7;
+  color:#000;
+  box-shadow: 0 0 30px #00fff7, 0 0 60px #00fff7;
+}
+
+@keyframes pulse{
+  0%{box-shadow:0 0 20px #00fff7,0 0 40px #00fff7,0 0 60px #00fff7;}
+  50%{box-shadow:0 0 30px #00fff7,0 0 60px #00fff7,0 0 90px #00fff7;}
+  100%{box-shadow:0 0 20px #00fff7,0 0 40px #00fff7,0 0 60px #00fff7;}
+}
+</style>
 </head>
 <body>
-<h2>در حال باز کردن کانال @BGM_STUDIO...</h2>
 
-<!-- SDK رسمی ایتا -->
+<div class="neon-box">
+  <h2>به کانال BGM_STUDIO خوش آمدید!</h2>
+  <button class="neon-button" id="openChannelBtn">باز کردن کانال</button>
+</div>
+
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
-
 <script>
-// صبر برای تعامل کاربر (الزامی در بعضی دستگاه‌ها)
-function openBGMChannel(){
+// فعال کردن فول‌اسکرین حداکثری داخل MiniApp
+function enableEitaa(){
+  if(window.Eitaa && Eitaa.WebApp){
+    Eitaa.WebApp.expand();
+    if(Eitaa.WebApp.requestFullscreen) Eitaa.WebApp.requestFullscreen();
+    if(Eitaa.WebApp.enableFullScreen) Eitaa.WebApp.enableFullScreen();
+    if(Eitaa.WebApp.lockOrientation) Eitaa.WebApp.lockOrientation();
+  }
+}
+
+// تعامل کاربر برای فول‌اسکرین
+document.addEventListener("click", enableEitaa, {once:true});
+document.addEventListener("touchstart", enableEitaa, {once:true});
+
+// باز کردن کانال داخل MiniApp
+document.getElementById("openChannelBtn").addEventListener("click", function(){
   if(window.Eitaa && Eitaa.WebApp && Eitaa.WebApp.openChat){
-    // باز کردن چت کانال @BGM_STUDIO
     Eitaa.WebApp.openChat("@BGM_STUDIO").then(()=>{
       console.log("کانال باز شد");
     }).catch((err)=>{
       console.error("باز کردن کانال شکست خورد:", err);
+      alert("این صفحه فقط داخل MiniApp ایتا کار می‌کند!");
     });
   } else {
-    // fallback اگر JSSDK نبود
-    alert("این صفحه فقط داخل MiniApp ایتا باز می‌شود!");
+    alert("این صفحه فقط داخل MiniApp ایتا کار می‌کند!");
   }
-}
-
-// فعال شدن با لمس یا کلیک
-document.addEventListener("click", openBGMChannel, {once:true});
-document.addEventListener("touchstart", openBGMChannel, {once:true});
+});
 </script>
+
 </body>
 </html>
