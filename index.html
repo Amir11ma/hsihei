@@ -1,9 +1,12 @@
 <!DOCTYPE html>
 <html lang="fa">
 <head>
-    <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
-    
-    <script>
+<meta charset="UTF-8">
+<title>Popup Test</title>
+
+<script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
+
+<script>
 document.addEventListener("DOMContentLoaded", function() {
   document.body.addEventListener("click", function(e) {
     let target = e.target;
@@ -15,13 +18,12 @@ document.addEventListener("DOMContentLoaded", function() {
     let href = target.getAttribute("href");
     if (!href) return;
 
-    // اگر لینک مربوط به eitaa.com است
     if (href.includes("eitaa.com")) {
-      e.preventDefault(); // جلوی باز شدن عادی لینک
+      e.preventDefault();
 
-      if (typeof openEitaaLink === "function") {
+      if (window.Eitaa && Eitaa.WebApp && Eitaa.WebApp.openEitaaLink) {
         // اگر داخل برنامک ایتا هستیم → مستقیم به پی‌وی شما هدایت شود
-        openEitaaLink("https://eitaa.com/Projee_ir2"); // <-- اینجا یوزرنیم خودت را بزار
+        Eitaa.WebApp.openEitaaLink("https://eitaa.com/Projee_ir2");
       } else {
         // خارج ایتا → لینک عادی باز شود
         window.location.href = href;
@@ -31,9 +33,6 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 </script>
 
-<meta charset="UTF-8">
-<title>Popup Test</title>
-
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap');
 
@@ -42,7 +41,6 @@ body{
   font-family: Vazirmatn, sans-serif;
 }
 
-/* ===== Overlay ===== */
 #projee-popup-overlay{
   position: fixed;
   inset: 0;
@@ -53,12 +51,10 @@ body{
   justify-content: center;
 }
 
-/* 🔥 فقط همین */
 #projee-popup-overlay:target{
   display: flex;
 }
 
-/* ===== Neon Border ===== */
 .neon-border{
   position: absolute;
   width: 96vw;
@@ -71,7 +67,6 @@ body{
   filter: blur(2px);
 }
 
-/* ===== Popup ===== */
 .projee-popup{
   position: relative;
   width: 94vw;
@@ -85,7 +80,6 @@ body{
   z-index: 2;
 }
 
-/* Close */
 .popup-close{
   position: absolute;
   top: 10px;
@@ -95,7 +89,6 @@ body{
   text-decoration: none;
 }
 
-/* Title */
 .neon-title{
   font-size: 26px;
   font-weight: 900;
@@ -104,14 +97,12 @@ body{
   text-shadow: 0 0 12px #00e5ff;
 }
 
-/* Image */
 .popup-image{
   max-width: 85%;
   margin: 10px auto;
   display: block;
 }
 
-/* Text */
 .popup-text{
   background: rgba(0,0,0,.35);
   border-radius: 14px;
@@ -124,7 +115,6 @@ body{
   text-align: right;
 }
 
-/* Button */
 .popup-btn{
   display: block;
   margin: 12px auto 0;
@@ -138,7 +128,6 @@ body{
   box-shadow: 0 0 60px rgba(255,238,88,.8);
 }
 
-/* Anim */
 @keyframes neonMove{
   0%{background-position:0% 50%;}
   50%{background-position:100% 50%;}
@@ -149,12 +138,10 @@ body{
 
 <body>
 
-<!-- لینک تست -->
 <p style="text-align:center;margin-top:40px;">
   <a href="#projee-popup-overlay">باز شدن پاپ‌آپ</a>
 </p>
 
-<!-- ===== POPUP ===== -->
 <div id="projee-popup-overlay">
 
   <div class="neon-border"></div>
@@ -163,7 +150,7 @@ body{
 
     <a href="#" class="popup-close">×</a>
 
-    <h2 class="neon-title">سفارش پروژه </h2>
+    <h2 class="neon-title">سفارش پروژه</h2>
 
     <img
       src="https://www.projee.ir/wp-content/uploads/2025/12/marketing-slider-pic-1.webp"
@@ -172,21 +159,21 @@ body{
     >
 
     <div class="popup-text">
-             سفارش پروژه های شما پس از شرح نیازها و با توجه به هویت کسب و کار شما پس از تایید کارشناسان ،پروژه دات آی آر به فریلنسرها سپرده خواهد شد
-             <br><br>
-             طراحی سایت
-             <br><br>
-برنامه نویسی 
-<br><br>
-کافی‌نت آنلاین
-<br><br>
-انجام کلیه امور اینترنتی، اداری و دانشجویی به‌صورت آنلاین، سریع، مطمئن همراه شما.
-<br><br>
-بخش جدید پروژه دات آی آر شامل ارایه تمامی خدمات کامپیوتری به صورت آنلاین میباشد این خدمات شامل:
-<br><br>
-خدمات دانشجویی،تایپ نامه و فرم‌های اداری،ثبت‌نام سامانه ها و آزمونهای فراگیر،طراحی پوستر و بنر،آماده‌سازی فایل چاپی،تولید محتوا فتوشاپ اتوکد،ویرایش و ادیت تصاویر،تایپ و صفحه‌آرایی پایان‌نامه،طراحی پاورپوینت حرفه‌ای برای ارائه دانشجویی،ثبت‌نام انتخاب واحد و امور سامانه آموزشی،ترجمه متون عمومی و دانشجویی،تایپ و ویرایش پروژه و تحقیق دانشجویی و....
-<br><br>
-زمان انجام هر خدمت بر اساس نوع درخواست (عادی یا فوری) متفاوت است،تمامی درخواست ها طی 2 الی 6 ساعت پس از ثبت برسی و پاسخ داده خواهد شد.
+      سفارش پروژه های شما پس از شرح نیازها و با توجه به هویت کسب و کار شما پس از تایید کارشناسان، پروژه دات آی آر به فریلنسرها سپرده خواهد شد
+      <br><br>
+      طراحی سایت
+      <br><br>
+      برنامه نویسی
+      <br><br>
+      کافی‌نت آنلاین
+      <br><br>
+      انجام کلیه امور اینترنتی، اداری و دانشجویی به‌صورت آنلاین، سریع، مطمئن همراه شما.
+      <br><br>
+      بخش جدید پروژه دات آی آر شامل ارایه تمامی خدمات کامپیوتری به صورت آنلاین میباشد این خدمات شامل:
+      <br><br>
+      خدمات دانشجویی، تایپ نامه و فرم‌های اداری، ثبت‌نام سامانه ها و آزمونهای فراگیر، طراحی پوستر و بنر، آماده‌سازی فایل چاپی، تولید محتوا فتوشاپ اتوکد، ویرایش و ادیت تصاویر، تایپ و صفحه‌آرایی پایان‌نامه، طراحی پاورپوینت حرفه‌ای برای ارائه دانشجویی، ثبت‌نام انتخاب واحد و امور سامانه آموزشی، ترجمه متون عمومی و دانشجویی، تایپ و ویرایش پروژه و تحقیق دانشجویی و...
+      <br><br>
+      زمان انجام هر خدمت بر اساس نوع درخواست (عادی یا فوری) متفاوت است، تمامی درخواست ها طی 2 الی 6 ساعت پس از ثبت بررسی و پاسخ داده خواهد شد.
     </div>
 
     <a href="https://eitaa.com/Projee_ir2" target="_blank" class="popup-btn">
