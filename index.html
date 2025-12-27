@@ -2,110 +2,135 @@
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>کانال BGM_STUDIO</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>ورود به گیم</title>
 
 <style>
-html, body{
+html,body{
   margin:0;
   padding:0;
   width:100%;
   height:100%;
-  overflow:hidden;
+  background:#0b1020;
   font-family: Vazir, sans-serif;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+  overflow:hidden;
   display:flex;
   justify-content:center;
   align-items:center;
-  animation: bgAnim 15s ease-in-out infinite;
 }
 
-@keyframes bgAnim {
-  0%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 50%;}
-}
-
-.neon-box{
-  padding: 35px 30px;
-  border-radius: 25px;
-  border: 2px solid #00f7ff;
-  box-shadow: 0 0 20px #00f7ff, 0 0 50px #00f7ff, 0 0 80px #00f7ff;
+.panel{
+  width:85%;
+  max-width:320px;
+  padding:25px;
+  border-radius:20px;
   text-align:center;
-  background: rgba(0,0,0,0.3);
-  animation: pulseBox 2s infinite alternate;
+  border:2px solid #00f7ff;
+  box-shadow:0 0 20px #00f7ff, 0 0 60px #00f7ff;
+  background:rgba(0,0,0,.4);
 }
 
-@keyframes pulseBox {
-  0%{box-shadow: 0 0 20px #00f7ff, 0 0 50px #00f7ff, 0 0 80px #00f7ff;}
-  100%{box-shadow: 0 0 40px #00f7ff, 0 0 70px #00f7ff, 0 0 120px #00f7ff;}
-}
-
-.neon-box h2{
+.panel h3{
   color:#00f7ff;
-  font-size:24px;
-  text-shadow: 0 0 10px #00f7ff, 0 0 20px #00f7ff;
-  margin-bottom:25px;
-  animation: textGlow 1.5s ease-in-out infinite alternate;
+  margin-bottom:15px;
+  text-shadow:0 0 10px #00f7ff;
 }
 
-@keyframes textGlow{
-  0%{text-shadow:0 0 10px #00f7ff,0 0 20px #00f7ff;}
-  100%{text-shadow:0 0 20px #00f7ff,0 0 40px #00f7ff;}
+.status{
+  color:#ffcc00;
+  font-size:14px;
+  margin-bottom:20px;
 }
 
-.neon-button{
-  padding: 14px 35px;
-  font-size:18px;
+.btn{
+  width:100%;
+  padding:12px;
+  font-size:16px;
+  border-radius:14px;
+  border:2px solid #00f7ff;
+  background:transparent;
   color:#00f7ff;
-  background: transparent;
-  border: 2px solid #00f7ff;
-  border-radius:15px;
   cursor:pointer;
-  text-decoration:none;
-  transition: 0.3s;
-  box-shadow: 0 0 15px #00f7ff, 0 0 30px #00f7ff;
+  box-shadow:0 0 15px #00f7ff;
 }
 
-.neon-button:hover{
-  background: #00f7ff;
-  color:#000;
-  box-shadow: 0 0 50px #00f7ff, 0 0 100px #00f7ff, 0 0 150px #00f7ff;
+.btn:disabled{
+  opacity:.4;
+  box-shadow:none;
+  cursor:not-allowed;
+}
+
+#game{
+  display:none;
+  width:100%;
+  height:100%;
+}
+
+#game iframe{
+  width:100%;
+  height:100%;
+  border:none;
 }
 </style>
 </head>
+
 <body>
 
-<div class="neon-box">
-  <h2>به کانال BGM_STUDIO خوش آمدید!</h2>
-  <button class="neon-button" id="openChannelBtn">باز کردن کانال</button>
+<div class="panel" id="panel">
+  <h3>🎮 آماده ورود به گیم</h3>
+  <div class="status" id="status">📱 گوشی را افقی کنید</div>
+  <button class="btn" id="playBtn" disabled>ورود به گیم</button>
+</div>
+
+<div id="game">
+  <iframe src="https://www.madkidgames.com/full/jungle-hill-climb-racing"></iframe>
 </div>
 
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
-// فول‌اسکرین حداکثری داخل MiniApp
-function enableEitaa(){
-  if(window.Eitaa && Eitaa.WebApp){
-    Eitaa.WebApp.expand();
-    if(Eitaa.WebApp.requestFullscreen) Eitaa.WebApp.requestFullscreen();
-    if(Eitaa.WebApp.enableFullScreen) Eitaa.WebApp.enableFullScreen();
-    if(Eitaa.WebApp.lockOrientation) Eitaa.WebApp.lockOrientation();
+const statusEl = document.getElementById("status");
+const playBtn  = document.getElementById("playBtn");
+
+function initEitaa(){
+  if(!window.Eitaa || !Eitaa.WebApp){
+    statusEl.innerText = "❌ خطا: صفحه داخل MiniApp ایتا نیست";
+    return;
+  }
+
+  Eitaa.WebApp.expand();
+
+  if(Eitaa.WebApp.requestFullscreen){
+    Eitaa.WebApp.requestFullscreen();
+  }
+
+  if(Eitaa.WebApp.lockOrientation){
+    Eitaa.WebApp.lockOrientation("landscape");
   }
 }
 
-// فعال شدن با اولین تعامل کاربر
-document.addEventListener("click", enableEitaa, {once:true});
-document.addEventListener("touchstart", enableEitaa, {once:true});
-
-// باز کردن کانال داخل MiniApp با لینک رسمی
-document.getElementById("openChannelBtn").addEventListener("click", function(){
-  if (window.Eitaa && Eitaa.WebApp && Eitaa.WebApp.openEitaaLink) {
-    Eitaa.WebApp.openEitaaLink("eitaa://view?url=https://eitaa.com/BGM_STUDIO");
-  } else {
-    alert("این صفحه باید داخل MiniApp ایتا باز شود!");
+function checkOrientation(){
+  if(window.innerWidth > window.innerHeight){
+    statusEl.innerText = "✅ جهت صفحه درست است";
+    playBtn.disabled = false;
+  }else{
+    statusEl.innerText = "📱 گوشی را افقی کنید";
+    playBtn.disabled = true;
   }
-});
+}
+
+playBtn.onclick = () => {
+  try{
+    document.getElementById("panel").style.display = "none";
+    document.getElementById("game").style.display = "block";
+  }catch(e){
+    statusEl.innerText = "❌ خطا در باز شدن گیم";
+  }
+};
+
+window.addEventListener("resize", checkOrientation);
+document.addEventListener("touchstart", initEitaa, {once:true});
+
+checkOrientation();
 </script>
 
 </body>
