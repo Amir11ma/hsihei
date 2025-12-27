@@ -86,10 +86,10 @@ function enableEitaa(){
 document.addEventListener("click", enableEitaa, {once:true});
 document.addEventListener("touchstart", enableEitaa, {once:true});
 
-// باز کردن کانال داخل MiniApp
+// باز کردن کانال داخل MiniApp با ID عددی
 document.getElementById("openChannelBtn").addEventListener("click", function(){
   if(window.Eitaa && Eitaa.WebApp && Eitaa.WebApp.openChat){
-    Eitaa.WebApp.openChat("@BGM_STUDIO").then(()=>{
+    Eitaa.WebApp.openChat(10984829).then(()=>{
       console.log("کانال باز شد");
     }).catch((err)=>{
       console.error("باز کردن کانال شکست خورد:", err);
