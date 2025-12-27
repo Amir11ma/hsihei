@@ -72,7 +72,7 @@ html, body{
 
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
-// فعال کردن فول‌اسکرین حداکثری داخل MiniApp
+// فول‌اسکرین حداکثری داخل MiniApp
 function enableEitaa(){
   if(window.Eitaa && Eitaa.WebApp){
     Eitaa.WebApp.expand();
@@ -82,21 +82,17 @@ function enableEitaa(){
   }
 }
 
-// تعامل کاربر برای فول‌اسکرین
+// فعال شدن با اولین تعامل کاربر
 document.addEventListener("click", enableEitaa, {once:true});
 document.addEventListener("touchstart", enableEitaa, {once:true});
 
-// باز کردن کانال داخل MiniApp با ID عددی
+// باز کردن کانال داخل MiniApp با لینک مطمئن
 document.getElementById("openChannelBtn").addEventListener("click", function(){
-  if(window.Eitaa && Eitaa.WebApp && Eitaa.WebApp.openChat){
-    Eitaa.WebApp.openChat(10984829).then(()=>{
-      console.log("کانال باز شد");
-    }).catch((err)=>{
-      console.error("باز کردن کانال شکست خورد:", err);
-      alert("این صفحه فقط داخل MiniApp ایتا کار می‌کند!");
-    });
+  // بررسی اینکه داخل MiniApp ایتا باز شده
+  if(navigator.userAgent.includes("Eitaa")){
+    window.location.href = "eitaa://channel?username=BGM_STUDIO";
   } else {
-    alert("این صفحه فقط داخل MiniApp ایتا کار می‌کند!");
+    alert("این صفحه فقط داخل MiniApp ایتا باز می‌شود!");
   }
 });
 </script>
