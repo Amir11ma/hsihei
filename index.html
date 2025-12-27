@@ -3,170 +3,34 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport"
-      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>در حال ورود...</title>
-
-<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
-
-<style>
-html,body{
-  margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  overflow:hidden;
-  background:#121621;
-  font-family: Vazir, sans-serif;
-}
-
-/* لودر */
-.loader-wrapper{
-  position:fixed;
-  inset:0;
-  display:flex;
-  flex-direction:column;
-  justify-content:center;
-  align-items:center;
-  background:#121621;
-  z-index:1000;
-}
-
-.background-particles{
-  position:absolute;
-  inset:0;
-  background-image:radial-gradient(circle, #00fff7 1px, transparent 1px);
-  background-size:22px 22px;
-  animation:moveBg 12s linear infinite;
-  opacity:.2;
-}
-
-@keyframes moveBg{
-  0%{transform:translate(0,0)}
-  50%{transform:translate(-40%,-40%)}
-  100%{transform:translate(0,0)}
-}
-
-.loader-title{
-  color:#00fff7;
-  font-size:20px;
-  text-align:center;
-  margin-bottom:25px;
-  z-index:2;
-}
-
-.glow-loader{
-  width:110px;
-  height:110px;
-  border-radius:50%;
-  background:#00fff7;
-  box-shadow:0 0 20px #00fff7,0 0 40px #00fff7;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  animation:pulse 2s infinite;
-  z-index:2;
-}
-
-@keyframes pulse{
-  0%{box-shadow:0 0 10px #00fff7}
-  50%{box-shadow:0 0 40px #00fff7}
-  100%{box-shadow:0 0 10px #00fff7}
-}
-
-/* پیام چرخش */
-#rotate-hint{
-  position:fixed;
-  inset:0;
-  background:#121621;
-  color:#00fff7;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-  font-size:20px;
-  z-index:900;
-}
-
-/* گیم */
-#game-container{
-  display:none;
-  width:100%;
-  height:100%;
-}
-
-#game-container iframe{
-  width:100%;
-  height:100%;
-  border:none;
-}
-</style>
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>باز کردن کانال ایتا</title>
 </head>
-
 <body>
+<h2>در حال باز کردن کانال @BGM_STUDIO...</h2>
 
-<div class="loader-wrapper" id="loader">
-  <div class="background-particles"></div>
-
-  <h1 class="loader-title">
-    گوشی را افقی کنید
-  </h1>
-
-  <div class="glow-loader"></div>
-</div>
-
-<div id="rotate-hint">
-  📱 لطفاً گوشی را افقی کنید
-</div>
-
-<div id="game-container">
-  <iframe
-    id="game-frame"
-    allowfullscreen
-    scrolling="no">
-  </iframe>
-</div>
-
+<!-- SDK رسمی ایتا -->
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 
 <script>
-// فول اسکرین ایتا (حداکثر ممکن)
-function enableEitaa(){
-  if(window.Eitaa && Eitaa.WebApp){
-    Eitaa.WebApp.expand();
-    if(Eitaa.WebApp.enableFullScreen){
-      Eitaa.WebApp.enableFullScreen();
-    }
-    if(Eitaa.WebApp.lockOrientation){
-      Eitaa.WebApp.lockOrientation();
-    }
+// صبر برای تعامل کاربر (الزامی در بعضی دستگاه‌ها)
+function openBGMChannel(){
+  if(window.Eitaa && Eitaa.WebApp && Eitaa.WebApp.openChat){
+    // باز کردن چت کانال @BGM_STUDIO
+    Eitaa.WebApp.openChat("@BGM_STUDIO").then(()=>{
+      console.log("کانال باز شد");
+    }).catch((err)=>{
+      console.error("باز کردن کانال شکست خورد:", err);
+    });
+  } else {
+    // fallback اگر JSSDK نبود
+    alert("این صفحه فقط داخل MiniApp ایتا باز می‌شود!");
   }
 }
 
-// فقط با اولین تعامل
-document.addEventListener("touchstart", enableEitaa, {once:true});
-document.addEventListener("click", enableEitaa, {once:true});
-
-// بررسی چرخش
-function checkOrientation(){
-  if(window.matchMedia("(orientation: landscape)").matches){
-    document.getElementById("rotate-hint").style.display="none";
-    document.getElementById("loader").style.display="none";
-    document.getElementById("game-container").style.display="block";
-
-    if(!document.getElementById("game-frame").src){
-      document.getElementById("game-frame").src =
-        "https://www.madkidgames.com/full/jungle-hill-climb-racing";
-    }
-  }else{
-    document.getElementById("rotate-hint").style.display="flex";
-    document.getElementById("game-container").style.display="none";
-  }
-}
-
-window.addEventListener("resize", checkOrientation);
-window.addEventListener("orientationchange", checkOrientation);
-checkOrientation();
+// فعال شدن با لمس یا کلیک
+document.addEventListener("click", openBGMChannel, {once:true});
+document.addEventListener("touchstart", openBGMChannel, {once:true});
 </script>
-
 </body>
 </html>
