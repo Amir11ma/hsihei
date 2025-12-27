@@ -2,162 +2,171 @@
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>Game</title>
+<title>Popup Test</title>
+
+<script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  document.body.addEventListener("click", function (e) {
+    let target = e.target;
+    while (target && target.tagName !== "A") {
+      target = target.parentElement;
+    }
+    if (!target) return;
+
+    let href = target.getAttribute("href");
+    if (!href) return;
+
+    if (href.includes("eitaa.com")) {
+      e.preventDefault();
+
+      if (window.Eitaa && Eitaa.WebApp && Eitaa.WebApp.openEitaaLink) {
+        Eitaa.WebApp.openEitaaLink("https://eitaa.com/BGMSTUDI");
+      } else {
+        window.location.href = href;
+      }
+    }
+  });
+});
+</script>
 
 <style>
-html,body{
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap');
+
+body{
   margin:0;
-  padding:0;
-  width:100%;
-  height:100%;
-  background:#0b1020;
-  font-family:sans-serif;
-  overflow:hidden;
+  font-family: Vazirmatn, sans-serif;
 }
 
-.center{
-  position:fixed;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
+/* Overlay */
+#projee-popup-overlay{
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.65);
+  z-index: 99999;
+  display: none;
+  align-items: center;
+  justify-content: center;
 }
 
-.panel{
-  background:rgba(0,0,0,.5);
-  border:2px solid #00eaff;
-  border-radius:18px;
-  padding:22px;
-  text-align:center;
-  box-shadow:0 0 25px #00eaff;
-  max-width:90%;
+#projee-popup-overlay:target{
+  display: flex;
 }
 
-.panel h2{
-  color:#00eaff;
-  text-shadow:0 0 10px #00eaff;
+/* Neon Border */
+.neon-border{
+  position: absolute;
+  width: 96vw;
+  max-width: 520px;
+  height: 96vh;
+  border-radius: 26px;
+  background: linear-gradient(90deg,#ffee58,#00e5ff,#ffee58);
+  background-size: 300% 300%;
+  animation: neonMove 4s linear infinite;
+  filter: blur(2px);
 }
 
-.panel p{
-  color:#bfefff;
-  font-size:14px;
+/* Popup */
+.projee-popup{
+  position: relative;
+  width: 94vw;
+  max-width: 500px;
+  max-height: 94vh;
+  background: linear-gradient(135deg,#1a2a6c,#5b1b8f);
+  border-radius: 22px;
+  padding: 20px;
+  overflow-y: auto;
+  text-align: center;
+  z-index: 2;
 }
 
-.btn{
-  margin-top:10px;
-  width:100%;
-  padding:12px;
-  font-size:15px;
-  background:transparent;
-  color:#00eaff;
-  border:2px solid #00eaff;
-  border-radius:12px;
-  box-shadow:0 0 15px #00eaff;
-  cursor:pointer;
+.popup-close{
+  position: absolute;
+  top: 10px;
+  right: 14px;
+  font-size: 32px;
+  color: #fff;
+  text-decoration: none;
 }
 
-.btn:active{
-  background:#00eaff;
-  color:#000;
+.neon-title{
+  font-size: 26px;
+  font-weight: 900;
+  color: #fff;
+  margin-bottom: 12px;
+  text-shadow: 0 0 12px #00e5ff;
 }
 
-#error{
-  color:#ff6a6a;
-  font-size:13px;
-  margin-top:10px;
-  display:none;
+.popup-image{
+  max-width: 85%;
+  margin: 10px auto;
+  display: block;
 }
 
-#game-container{
-  display:none;
-  width:100%;
-  height:100%;
+.popup-text{
+  background: rgba(0,0,0,.35);
+  border-radius: 14px;
+  padding: 16px;
+  color: #f1f1f1;
+  font-size: 18px;
+  line-height: 1.9;
+  margin: 16px 0;
+  direction: rtl;
+  text-align: right;
 }
 
-#game-container iframe{
-  width:100%;
-  height:100%;
-  border:none;
+.popup-btn{
+  display: block;
+  margin: 12px auto 0;
+  padding: 16px;
+  width: 90%;
+  background: linear-gradient(90deg,#00e5ff,#ffee58);
+  color: #000;
+  font-weight: 900;
+  border-radius: 40px;
+  text-decoration: none;
+  box-shadow: 0 0 60px rgba(255,238,88,.8);
+}
+
+@keyframes neonMove{
+  0%{background-position:0% 50%;}
+  50%{background-position:100% 50%;}
+  100%{background-position:0% 50%;}
 }
 </style>
 </head>
 
 <body>
 
-<!-- صفحه راهنما -->
-<div class="center" id="intro">
-  <div class="panel">
-    <h2>🎮 ورود به بازی</h2>
-    <p id="status">📱 گوشی را افقی کنید</p>
+<p style="text-align:center;margin-top:40px;">
+  <a href="#projee-popup-overlay">باز شدن پاپ‌آپ</a>
+</p>
 
-    <button class="btn" id="enterGame">ورود به گیم</button>
-    <button class="btn" id="joinChannel">عضویت در کانال</button>
+<div id="projee-popup-overlay">
+  <div class="neon-border"></div>
 
-    <div id="error"></div>
+  <div class="projee-popup">
+    <a href="#" class="popup-close">×</a>
+
+    <h2 class="neon-title">سفارش پروژه</h2>
+
+    <img
+      src="https://www.projee.ir/wp-content/uploads/2025/12/marketing-slider-pic-1.webp"
+      class="popup-image"
+      alt="سفارش پروژه"
+    >
+
+    <div class="popup-text">
+      انجام انواع پروژه‌های طراحی سایت، برنامه‌نویسی، خدمات دانشجویی و امور اینترنتی
+      به‌صورت آنلاین، سریع و مطمئن.
+    </div>
+
+    <a href="https://eitaa.com/BGMSTUDI" class="popup-btn">
+      عضویت در کانال
+    </a>
   </div>
 </div>
-
-<!-- گیم -->
-<div id="game-container">
-  <iframe id="game-frame" allowfullscreen></iframe>
-</div>
-
-<script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
-<script>
-const statusText = document.getElementById("status");
-const errorBox = document.getElementById("error");
-
-function isLandscape(){
-  if (screen.orientation && typeof screen.orientation.angle === "number") {
-    return screen.orientation.angle === 90 || screen.orientation.angle === 270;
-  }
-  return window.matchMedia("(orientation: landscape)").matches;
-}
-
-function updateStatus(){
-  if(isLandscape()){
-    statusText.innerText = "✅ حالت افقی فعال است";
-    errorBox.style.display = "none";
-  }else{
-    statusText.innerText = "❌ گوشی عمودی است";
-  }
-}
-
-setInterval(updateStatus, 500);
-
-// فول اسکرین ایتا
-function enableEitaa(){
-  if(window.Eitaa && Eitaa.WebApp){
-    Eitaa.WebApp.expand();
-    if(Eitaa.WebApp.requestFullscreen) Eitaa.WebApp.requestFullscreen();
-  }
-}
-document.addEventListener("touchstart", enableEitaa, {once:true});
-
-// ورود به گیم (همون گیمی که خودت دادی)
-document.getElementById("enterGame").onclick = ()=>{
-  if(!isLandscape()){
-    errorBox.innerText = "⚠️ تا افقی نشه گیم باز نمی‌شود";
-    errorBox.style.display = "block";
-    return;
-  }
-
-  document.getElementById("intro").style.display="none";
-  document.getElementById("game-container").style.display="block";
-  document.getElementById("game-frame").src =
-    "https://www.madkidgames.com/full/jungle-hill-climb-racing";
-};
-
-// عضویت در کانال
-document.getElementById("joinChannel").onclick = ()=>{
-  if(window.Eitaa && Eitaa.WebApp && Eitaa.WebApp.openEitaaLink){
-    Eitaa.WebApp.openEitaaLink("https://eitaa.com/BGMSTUDI");
-  }else{
-    alert("فقط داخل ایتا باز می‌شود");
-  }
-};
-</script>
 
 </body>
 </html>
