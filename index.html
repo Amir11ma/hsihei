@@ -2,8 +2,8 @@
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>ورود به گیم</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Game</title>
 
 <style>
 html,body{
@@ -12,61 +12,70 @@ html,body{
   width:100%;
   height:100%;
   background:#0b1020;
-  font-family: Vazir, sans-serif;
+  font-family:sans-serif;
   overflow:hidden;
+}
+
+.center{
+  position:fixed;
+  inset:0;
   display:flex;
-  justify-content:center;
   align-items:center;
+  justify-content:center;
 }
 
 .panel{
-  width:85%;
-  max-width:320px;
-  padding:25px;
-  border-radius:20px;
+  background:rgba(0,0,0,.5);
+  border:2px solid #00eaff;
+  border-radius:18px;
+  padding:22px;
   text-align:center;
-  border:2px solid #00f7ff;
-  box-shadow:0 0 20px #00f7ff, 0 0 60px #00f7ff;
-  background:rgba(0,0,0,.4);
+  box-shadow:0 0 25px #00eaff;
+  max-width:90%;
 }
 
-.panel h3{
-  color:#00f7ff;
-  margin-bottom:15px;
-  text-shadow:0 0 10px #00f7ff;
+.panel h2{
+  color:#00eaff;
+  text-shadow:0 0 10px #00eaff;
 }
 
-.status{
-  color:#ffcc00;
+.panel p{
+  color:#bfefff;
   font-size:14px;
-  margin-bottom:20px;
 }
 
 .btn{
+  margin-top:10px;
   width:100%;
   padding:12px;
-  font-size:16px;
-  border-radius:14px;
-  border:2px solid #00f7ff;
+  font-size:15px;
   background:transparent;
-  color:#00f7ff;
+  color:#00eaff;
+  border:2px solid #00eaff;
+  border-radius:12px;
+  box-shadow:0 0 15px #00eaff;
   cursor:pointer;
-  box-shadow:0 0 15px #00f7ff;
 }
 
-.btn:disabled{
-  opacity:.4;
-  box-shadow:none;
-  cursor:not-allowed;
+.btn:active{
+  background:#00eaff;
+  color:#000;
 }
 
-#game{
+#error{
+  color:#ff6a6a;
+  font-size:13px;
+  margin-top:10px;
+  display:none;
+}
+
+#game-container{
   display:none;
   width:100%;
   height:100%;
 }
 
-#game iframe{
+#game-container iframe{
   width:100%;
   height:100%;
   border:none;
@@ -76,61 +85,78 @@ html,body{
 
 <body>
 
-<div class="panel" id="panel">
-  <h3>🎮 آماده ورود به گیم</h3>
-  <div class="status" id="status">📱 گوشی را افقی کنید</div>
-  <button class="btn" id="playBtn" disabled>ورود به گیم</button>
+<!-- صفحه راهنما -->
+<div class="center" id="intro">
+  <div class="panel">
+    <h2>🎮 ورود به بازی</h2>
+    <p id="status">📱 گوشی را افقی کنید</p>
+
+    <button class="btn" id="enterGame">ورود به گیم</button>
+    <button class="btn" id="joinChannel">عضویت در کانال</button>
+
+    <div id="error"></div>
+  </div>
 </div>
 
-<div id="game">
-  <iframe src="https://www.madkidgames.com/full/jungle-hill-climb-racing"></iframe>
+<!-- گیم -->
+<div id="game-container">
+  <iframe id="game-frame" allowfullscreen></iframe>
 </div>
 
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 <script>
-const statusEl = document.getElementById("status");
-const playBtn  = document.getElementById("playBtn");
+const statusText = document.getElementById("status");
+const errorBox = document.getElementById("error");
 
-function initEitaa(){
-  if(!window.Eitaa || !Eitaa.WebApp){
-    statusEl.innerText = "❌ خطا: صفحه داخل MiniApp ایتا نیست";
+function isLandscape(){
+  if (screen.orientation && typeof screen.orientation.angle === "number") {
+    return screen.orientation.angle === 90 || screen.orientation.angle === 270;
+  }
+  return window.matchMedia("(orientation: landscape)").matches;
+}
+
+function updateStatus(){
+  if(isLandscape()){
+    statusText.innerText = "✅ حالت افقی فعال است";
+    errorBox.style.display = "none";
+  }else{
+    statusText.innerText = "❌ گوشی عمودی است";
+  }
+}
+
+setInterval(updateStatus, 500);
+
+// فول اسکرین ایتا
+function enableEitaa(){
+  if(window.Eitaa && Eitaa.WebApp){
+    Eitaa.WebApp.expand();
+    if(Eitaa.WebApp.requestFullscreen) Eitaa.WebApp.requestFullscreen();
+  }
+}
+document.addEventListener("touchstart", enableEitaa, {once:true});
+
+// ورود به گیم (همون گیمی که خودت دادی)
+document.getElementById("enterGame").onclick = ()=>{
+  if(!isLandscape()){
+    errorBox.innerText = "⚠️ تا افقی نشه گیم باز نمی‌شود";
+    errorBox.style.display = "block";
     return;
   }
 
-  Eitaa.WebApp.expand();
-
-  if(Eitaa.WebApp.requestFullscreen){
-    Eitaa.WebApp.requestFullscreen();
-  }
-
-  if(Eitaa.WebApp.lockOrientation){
-    Eitaa.WebApp.lockOrientation("landscape");
-  }
-}
-
-function checkOrientation(){
-  if(window.innerWidth > window.innerHeight){
-    statusEl.innerText = "✅ جهت صفحه درست است";
-    playBtn.disabled = false;
-  }else{
-    statusEl.innerText = "📱 گوشی را افقی کنید";
-    playBtn.disabled = true;
-  }
-}
-
-playBtn.onclick = () => {
-  try{
-    document.getElementById("panel").style.display = "none";
-    document.getElementById("game").style.display = "block";
-  }catch(e){
-    statusEl.innerText = "❌ خطا در باز شدن گیم";
-  }
+  document.getElementById("intro").style.display="none";
+  document.getElementById("game-container").style.display="block";
+  document.getElementById("game-frame").src =
+    "https://www.madkidgames.com/full/jungle-hill-climb-racing";
 };
 
-window.addEventListener("resize", checkOrientation);
-document.addEventListener("touchstart", initEitaa, {once:true});
-
-checkOrientation();
+// عضویت در کانال
+document.getElementById("joinChannel").onclick = ()=>{
+  if(window.Eitaa && Eitaa.WebApp && Eitaa.WebApp.openEitaaLink){
+    Eitaa.WebApp.openEitaaLink("https://eitaa.com/BGM_STUDIO");
+  }else{
+    alert("فقط داخل ایتا باز می‌شود");
+  }
+};
 </script>
 
 </body>
