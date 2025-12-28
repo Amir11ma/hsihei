@@ -13,7 +13,13 @@
 <script>
   document.addEventListener("DOMContentLoaded", function() {
     if (window.Eitaa && window.Eitaa.WebApp) {
-      window.Eitaa.WebApp.requestFullscreen();
+      // درخواست Fullscreen
+      Eitaa.WebApp.requestFullscreen();
+
+      // قفل چرخش به حالت افقی
+      setTimeout(function() {
+        Eitaa.WebApp.lockOrientation("landscape");
+      }, 300);
     }
   });
 </script>
@@ -80,6 +86,7 @@ html, body {
   z-index: 1;
 }
 
+/* انیمیشن‌ها */
 @keyframes glowEffect {
   0% { box-shadow: 0 0 5px #2760fe, 0 0 10px #2f71ff; }
   50% { box-shadow: 0 0 20px #2f71ff, 0 0 30px #2760fe; }
@@ -97,6 +104,7 @@ html, body {
   100% { transform: translate(0,0) rotate(360deg); }
 }
 
+/* موبایل */
 @media (max-width: 600px) {
   .loader-title { font-size: 28px; }
   .glow-loader { width: 120px; height: 120px; }
@@ -125,8 +133,7 @@ html, body {
 <!-- لودر -->
 <div class="loader-wrapper" id="loader">
   <h1 class="loader-title">
-    آژانس طراحی سایت پروژه دات آی آر،
-    پلتفرم جامع خدمات دیجیتال
+    آژانس طراحی سایت پروژه دات آی آر، پلتفرم جامع خدمات دیجیتال
   </h1>
 
   <div class="glow-loader">
@@ -154,20 +161,20 @@ document.addEventListener('DOMContentLoaded', function () {
   }
 
   setTimeout(function () {
+
     document.getElementById('loader').style.display = 'none';
 
     var gameContainer = document.getElementById('game-container');
     var gameFrame = document.getElementById('game-frame');
 
-    gameFrame.src =
-      "https://www.madkidgames.com/full/jungle-hill-climb-racing";
+    gameFrame.src = "https://www.madkidgames.com/full/jungle-hill-climb-racing";
 
     gameContainer.style.display = 'block';
 
-    // تمام‌صفحه + قفل چرخش (فقط داخل ایتا)
+    // تمام‌صفحه + قفل چرخش (داخل ایتا)
     if (window.Eitaa && Eitaa.WebApp) {
       Eitaa.WebApp.requestFullscreen();
-      Eitaa.WebApp.lockOrientation("portrait"); // ← این خط اضافه شد
+      Eitaa.WebApp.lockOrientation("landscape");
     }
 
   }, 8500);
