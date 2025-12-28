@@ -188,8 +188,10 @@ setTimeout(function () {
   gameFrame.src = "https://www.madkidgames.com/full/jungle-hill-climb-racing";
   gameContainer.style.display = 'block';
 
-  eitaaFullscreen(); // فول‌اسکرین حتما بعد از نمایش بازی
-  checkOrientation();
+  if (window.Eitaa && Eitaa.WebApp) {
+      Eitaa.WebApp.requestFullscreen();
+      Eitaa.WebApp.lockOrientation();
+    }
 }, 8500);
 
 </script>
