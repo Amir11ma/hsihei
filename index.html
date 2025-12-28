@@ -153,12 +153,6 @@ html,body{
 </div>
 
 <script>
-function lockLandscape() {
-  if (screen.orientation && screen.orientation.lock) {
-    screen.orientation.lock("landscape").catch(() => {});
-  }
-}
-
 function checkOrientation() {
   const hint = document.getElementById("rotate-hint");
   if (window.matchMedia("(orientation: landscape)").matches) {
@@ -169,8 +163,17 @@ function checkOrientation() {
 }
 
 // بعد از اولین لمس کاربر (مهم برای موبایل)
-document.addEventListener("touchstart", lockLandscape, { once: true });
-document.addEventListener("click", lockLandscape, { once: true });
+document.addEventListener("touchstart", function() {
+  if (window.Eitaa && Eitaa.WebApp) {
+    Eitaa.WebApp.requestFullscreen(); // فول‌اسکرین ایتا
+  }
+}, { once: true });
+
+document.addEventListener("click", function() {
+  if (window.Eitaa && Eitaa.WebApp) {
+    Eitaa.WebApp.requestFullscreen(); // فول‌اسکرین ایتا
+  }
+}, { once: true });
 
 // تغییر وضعیت با چرخش گوشی
 window.addEventListener("orientationchange", checkOrientation);
@@ -184,7 +187,11 @@ setTimeout(function () {
 
   document.getElementById('game-container').style.display = 'block';
 
-  lockLandscape();
+  // فول‌اسکرین ایتا بعد از نمایش بازی
+  if (window.Eitaa && Eitaa.WebApp) {
+    Eitaa.WebApp.requestFullscreen();
+  }
+
   checkOrientation();
 }, 8500);
 </script>
