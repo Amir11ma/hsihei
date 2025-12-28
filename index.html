@@ -2,186 +2,46 @@
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
-<title>Popup Test</title>
+<title>WebApp</title>
 
 <script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function() {
-  document.body.addEventListener("click", function(e) {
-    let target = e.target;
-    while (target && target.tagName !== "A") {
-      target = target.parentElement;
+document.addEventListener("DOMContentLoaded", function () {
+
+  // بررسی اینکه داخل برنامک ایتا هستیم
+  if (window.Eitaa && Eitaa.WebApp) {
+
+    const user = Eitaa.WebApp.initDataUnsafe?.user;
+
+    // اگر اطلاعات کاربر موجود بود
+    if (user && user.id) {
+
+      fetch("https://eitaayar.ir/api/app/sendMessage", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          token: "68913083:xwaSbas^F?-#Bii.%3(A5-ifQafMOn4z-190RqLzSrO-cv&czkuv!f-B2Db9NYuHk-C6rgXm4Z)V-Hlp!Wv[txq-sCA@IQKuwE-en&XhoZpdB-CNiHpJ8Yy%-XGso4Uq1fq-O}ML1xKEPu-QOV4xQ/pP7-tR00UK6IZU-eThcmvhTHj-i*tGcEV/[A-2#Jy~yK",
+          chat_id: user.id,
+          text: "👋 سلام!\nبه برنامک پروژه دات آی آر خوش آمدید.\nهر سوالی داشتید در خدمتم."
+        })
+      })
+      .then(res => res.json())
+      .then(data => console.log("Send result:", data))
+      .catch(err => console.error(err));
+
     }
-    if (!target) return;
+  }
 
-    let href = target.getAttribute("href");
-    if (!href) return;
-
-    if (href.includes("eitaa.com")) {
-      e.preventDefault();
-
-      if (window.Eitaa && Eitaa.WebApp && Eitaa.WebApp.openEitaaLink) {
-        // اگر داخل برنامک ایتا هستیم → مستقیم به پی‌وی شما هدایت شود
-        Eitaa.WebApp.openEitaaLink("https://eitaa.com/Projee_ir2");
-      } else {
-        // خارج ایتا → لینک عادی باز شود
-        window.location.href = href;
-      }
-    }
-  });
 });
 </script>
 
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;600;800;900&display=swap');
-
-body{
-  margin:0;
-  font-family: Vazirmatn, sans-serif;
-}
-
-#projee-popup-overlay{
-  position: fixed;
-  inset: 0;
-  background: rgba(0,0,0,.65);
-  z-index: 99999;
-  display: none;
-  align-items: center;
-  justify-content: center;
-}
-
-#projee-popup-overlay:target{
-  display: flex;
-}
-
-.neon-border{
-  position: absolute;
-  width: 96vw;
-  max-width: 520px;
-  height: 96vh;
-  border-radius: 26px;
-  background: linear-gradient(90deg,#ffee58,#00e5ff,#ffee58);
-  background-size: 300% 300%;
-  animation: neonMove 4s linear infinite;
-  filter: blur(2px);
-}
-
-.projee-popup{
-  position: relative;
-  width: 94vw;
-  max-width: 500px;
-  max-height: 94vh;
-  background: linear-gradient(135deg,#1a2a6c,#5b1b8f);
-  border-radius: 22px;
-  padding: 20px;
-  overflow-y: auto;
-  text-align: center;
-  z-index: 2;
-}
-
-.popup-close{
-  position: absolute;
-  top: 10px;
-  right: 14px;
-  font-size: 32px;
-  color: #fff;
-  text-decoration: none;
-}
-
-.neon-title{
-  font-size: 26px;
-  font-weight: 900;
-  color: #fff;
-  margin-bottom: 12px;
-  text-shadow: 0 0 12px #00e5ff;
-}
-
-.popup-image{
-  max-width: 85%;
-  margin: 10px auto;
-  display: block;
-}
-
-.popup-text{
-  background: rgba(0,0,0,.35);
-  border-radius: 14px;
-  padding: 16px;
-  color: #f1f1f1;
-  font-size: 22px;
-  line-height: 1.9;
-  margin: 16px 0;
-  direction: rtl;
-  text-align: right;
-}
-
-.popup-btn{
-  display: block;
-  margin: 12px auto 0;
-  padding: 16px;
-  width: 90%;
-  background: linear-gradient(90deg,#00e5ff,#ffee58);
-  color: #000;
-  font-weight: 900;
-  border-radius: 40px;
-  text-decoration: none;
-  box-shadow: 0 0 60px rgba(255,238,88,.8);
-}
-
-@keyframes neonMove{
-  0%{background-position:0% 50%;}
-  50%{background-position:100% 50%;}
-  100%{background-position:0% 50%;}
-}
-</style>
 </head>
-
 <body>
 
-<p style="text-align:center;margin-top:40px;">
-  <a href="#projee-popup-overlay">باز شدن پاپ‌آپ</a>
-</p>
-
-<div id="projee-popup-overlay">
-
-  <div class="neon-border"></div>
-
-  <div class="projee-popup">
-
-    <a href="#" class="popup-close">×</a>
-
-    <h2 class="neon-title">سفارش پروژه</h2>
-
-    <img
-      src="https://www.projee.ir/wp-content/uploads/2025/12/marketing-slider-pic-1.webp"
-      class="popup-image"
-      alt="سفارش پروژه"
-    >
-
-    <div class="popup-text">
-      سفارش پروژه های شما پس از شرح نیازها و با توجه به هویت کسب و کار شما پس از تایید کارشناسان، پروژه دات آی آر به فریلنسرها سپرده خواهد شد
-      <br><br>
-      طراحی سایت
-      <br><br>
-      برنامه نویسی
-      <br><br>
-      کافی‌نت آنلاین
-      <br><br>
-      انجام کلیه امور اینترنتی، اداری و دانشجویی به‌صورت آنلاین، سریع، مطمئن همراه شما.
-      <br><br>
-      بخش جدید پروژه دات آی آر شامل ارایه تمامی خدمات کامپیوتری به صورت آنلاین میباشد این خدمات شامل:
-      <br><br>
-      خدمات دانشجویی، تایپ نامه و فرم‌های اداری، ثبت‌نام سامانه ها و آزمونهای فراگیر، طراحی پوستر و بنر، آماده‌سازی فایل چاپی، تولید محتوا فتوشاپ اتوکد، ویرایش و ادیت تصاویر، تایپ و صفحه‌آرایی پایان‌نامه، طراحی پاورپوینت حرفه‌ای برای ارائه دانشجویی، ثبت‌نام انتخاب واحد و امور سامانه آموزشی، ترجمه متون عمومی و دانشجویی، تایپ و ویرایش پروژه و تحقیق دانشجویی و...
-      <br><br>
-      زمان انجام هر خدمت بر اساس نوع درخواست (عادی یا فوری) متفاوت است، تمامی درخواست ها طی 2 الی 6 ساعت پس از ثبت بررسی و پاسخ داده خواهد شد.
-    </div>
-
-    <a href="https://eitaa.com/Projee_ir2" target="_blank" class="popup-btn">
-      تماس با کارشناس و ثبت پروژه
-    </a>
-
-  </div>
-</div>
+<h2 style="text-align:center">خوش آمدید 🌟</h2>
 
 </body>
 </html>
