@@ -1,146 +1,145 @@
-<!DOCTYPE html>
+<?php
+/* Template Name: Page Loader + Game (Eitaa MiniApp) */
+?><!DOCTYPE html>
 <html lang="fa">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 <title>در حال ورود...</title>
 
-<!-- فونت وزیر -->
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
 
-<!-- SDK ایتا -->
-<script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    if (window.Eitaa && window.Eitaa.WebApp) {
-      // درخواست Fullscreen
-      Eitaa.WebApp.requestFullscreen();
-
-      // قفل چرخش به حالت افقی
-      setTimeout(function() {
-        Eitaa.WebApp.lockOrientation("landscape");
-      }, 300);
-    }
-  });
-</script>
-
 <style>
-html, body {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  overflow: hidden;
-  background: #121621;
+html,body{
+  margin:0;
+  padding:0;
+  width:100%;
+  height:100%;
+  overflow:hidden;
+  background:#121621;
   font-family: Vazir, sans-serif;
 }
 
-/* ===== لودر ===== */
-.loader-wrapper {
-  position: fixed;
-  inset: 0;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  background-color: #121621;
-  overflow: hidden;
-  text-align: center;
-  padding: 20px;
-  z-index: 10;
+.loader-wrapper{
+  position:fixed;
+  inset:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  background:#121621;
+  text-align:center;
+  padding:20px;
+  z-index:1000;
 }
 
-.loader-title {
-  font-size: 32px;
-  color: #00bfff;
-  margin-bottom: 30px;
-  text-shadow: 0 0 10px #2760fe, 0 0 20px #2f71ff;
-  z-index: 2;
+.background-particles{
+  position:absolute;
+  inset:0;
+  background-image:radial-gradient(circle, #ff6a00 1px, transparent 1px);
+  background-size:20px 20px;
+  animation:moveBg 12s linear infinite;
+  opacity:.25;
+  z-index:1;
 }
 
-.glow-loader {
-  width: 150px;
-  height: 150px;
-  border-radius: 50%;
-  background: linear-gradient(45deg, #2760fe, #2f71ff);
-  animation: glowEffect 2s ease-in-out infinite, spinEffect 5s linear infinite;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  z-index: 2;
+@keyframes moveBg{
+  0%{transform:translate(0,0)}
+  50%{transform:translate(-50%,-50%)}
+  100%{transform:translate(0,0)}
 }
 
-.glow-loader span {
-  color: #00bfff;
-  font-size: 28px;
-  font-weight: bold;
-  animation: textWaveEffect 1.5s ease-in-out infinite alternate;
+.loader-title{
+  color:#00bfff;
+  font-size:22px;
+  line-height:1.9;
+  margin-bottom:24px;
+  text-shadow:0 0 10px #2760fe;
+  z-index:2;
 }
 
-.background-particles {
-  position: absolute;
-  inset: -50%;
-  background-image: radial-gradient(circle, #ff6a00 1px, transparent 1px);
-  background-size: 20px 20px;
-  animation: moveParticles 10s linear infinite;
-  opacity: 0.25;
-  z-index: 1;
+.glow-loader{
+  width:120px;
+  height:120px;
+  border-radius:50%;
+  background:linear-gradient(45deg,#2760fe,#2f71ff);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  animation:glow 2s ease-in-out infinite;
+  z-index:2;
 }
 
-/* انیمیشن‌ها */
-@keyframes glowEffect {
-  0% { box-shadow: 0 0 5px #2760fe, 0 0 10px #2f71ff; }
-  50% { box-shadow: 0 0 20px #2f71ff, 0 0 30px #2760fe; }
-  100% { box-shadow: 0 0 5px #2760fe, 0 0 10px #2f71ff; }
+.glow-loader span{
+  color:#00bfff;
+  font-size:15px;
+  font-weight:bold;
 }
 
-@keyframes textWaveEffect {
-  0% { text-shadow: 0 0 5px #00bfff; }
-  100% { text-shadow: 0 0 20px #2f71ff; }
+@keyframes glow{
+  0%{box-shadow:0 0 5px #2760fe}
+  50%{box-shadow:0 0 25px #2f71ff}
+  100%{box-shadow:0 0 5px #2760fe}
 }
 
-@keyframes moveParticles {
-  0% { transform: translate(0,0) rotate(0deg); }
-  50% { transform: translate(-50%,-50%) rotate(180deg); }
-  100% { transform: translate(0,0) rotate(360deg); }
+#game-container{
+  display:none;
+  width:100%;
+  height:100vh;
 }
 
-/* موبایل */
-@media (max-width: 600px) {
-  .loader-title { font-size: 28px; }
-  .glow-loader { width: 120px; height: 120px; }
-  .glow-loader span { font-size: 19px; }
+#game-container iframe{
+  width:100%;
+  height:100vh;
+  border:none;
 }
 
-/* ===== گیم ===== */
-#game-container {
-  position: fixed;
-  inset: 0;
-  display: none;
-  background: #000;
-  z-index: 5;
+#rotate-hint{
+  position:fixed;
+  inset:0;
+  background:#121621;
+  color:#00bfff;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  text-align:center;
+  font-size:20px;
+  padding:20px;
+  z-index:99999;
 }
 
-#game-frame {
-  width: 100%;
-  height: 100%;
-  border: 0;
+@media screen and (orientation: landscape){
+  #rotate-hint{
+    display:none;
+  }
+}
+
+@media(max-width:600px){
+  .loader-title{font-size:17px}
+  .glow-loader{width:100px;height:100px}
+  .glow-loader span{font-size:13px}
 }
 </style>
 </head>
 
 <body>
 
-<!-- لودر -->
 <div class="loader-wrapper" id="loader">
+  <div class="background-particles"></div>
+
   <h1 class="loader-title">
-    آژانس طراحی سایت پروژه دات آی آر، پلتفرم جامع خدمات دیجیتال
+    آژانس خلاقیت پروژه دات آی آر<br>
+    پلتفرم جامع خدمات دیجیتال
   </h1>
 
   <div class="glow-loader">
     <span>پروژه دات آی آر</span>
   </div>
+</div>
 
-  <div class="background-particles"></div>
+<div id="rotate-hint">
+  📱 لطفاً گوشی را افقی کنید
 </div>
 
 <!-- گیم -->
@@ -154,32 +153,40 @@ html, body {
 </div>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-
-  if (window.Eitaa && Eitaa.WebApp) {
-    Eitaa.WebApp.ready();
+function lockLandscape() {
+  if (screen.orientation && screen.orientation.lock) {
+    screen.orientation.lock("landscape").catch(() => {});
   }
+}
 
-  setTimeout(function () {
+function checkOrientation() {
+  const hint = document.getElementById("rotate-hint");
+  if (window.matchMedia("(orientation: landscape)").matches) {
+    hint.style.display = "none";
+  } else {
+    hint.style.display = "flex";
+  }
+}
 
-    document.getElementById('loader').style.display = 'none';
+// بعد از اولین لمس کاربر (مهم برای موبایل)
+document.addEventListener("touchstart", lockLandscape, { once: true });
+document.addEventListener("click", lockLandscape, { once: true });
 
-    var gameContainer = document.getElementById('game-container');
-    var gameFrame = document.getElementById('game-frame');
+// تغییر وضعیت با چرخش گوشی
+window.addEventListener("orientationchange", checkOrientation);
+window.addEventListener("resize", checkOrientation);
 
-    gameFrame.src = "https://www.madkidgames.com/full/jungle-hill-climb-racing";
+setTimeout(function () {
+  document.getElementById('loader').style.display = 'none';
 
-    gameContainer.style.display = 'block';
+  document.getElementById('game-frame').src =
+    "https://www.madkidgames.com/full/jungle-hill-climb-racing";
 
-    // تمام‌صفحه + قفل چرخش (داخل ایتا)
-    if (window.Eitaa && Eitaa.WebApp) {
-      Eitaa.WebApp.requestFullscreen();
-      Eitaa.WebApp.lockOrientation("landscape");
-    }
+  document.getElementById('game-container').style.display = 'block';
 
-  }, 8500);
-
-});
+  lockLandscape();
+  checkOrientation();
+}, 8500);
 </script>
 
 </body>
