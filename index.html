@@ -153,6 +153,14 @@ html,body{
 </div>
 
 <script>
+// فول‌اسکرین ایتا
+function eitaaFullscreen() {
+  if (window.Eitaa && Eitaa.WebApp) {
+    Eitaa.WebApp.requestFullscreen();
+  }
+}
+
+// بررسی جهت گوشی
 function checkOrientation() {
   const hint = document.getElementById("rotate-hint");
   if (window.matchMedia("(orientation: landscape)").matches) {
@@ -162,38 +170,28 @@ function checkOrientation() {
   }
 }
 
-// بعد از اولین لمس کاربر (مهم برای موبایل)
-document.addEventListener("touchstart", function() {
-  if (window.Eitaa && Eitaa.WebApp) {
-    Eitaa.WebApp.requestFullscreen(); // فول‌اسکرین ایتا
-  }
-}, { once: true });
-
-document.addEventListener("click", function() {
-  if (window.Eitaa && Eitaa.WebApp) {
-    Eitaa.WebApp.requestFullscreen(); // فول‌اسکرین ایتا
-  }
-}, { once: true });
+// لمس یا کلیک برای فعال کردن فول‌اسکرین (موبایل)
+document.addEventListener("touchstart", eitaaFullscreen, { once: true });
+document.addEventListener("click", eitaaFullscreen, { once: true });
 
 // تغییر وضعیت با چرخش گوشی
 window.addEventListener("orientationchange", checkOrientation);
 window.addEventListener("resize", checkOrientation);
 
+// بعد از لودر
 setTimeout(function () {
   document.getElementById('loader').style.display = 'none';
 
-  document.getElementById('game-frame').src =
-    "https://www.madkidgames.com/full/jungle-hill-climb-racing";
+  const gameFrame = document.getElementById('game-frame');
+  const gameContainer = document.getElementById('game-container');
 
-  document.getElementById('game-container').style.display = 'block';
+  gameFrame.src = "https://www.madkidgames.com/full/jungle-hill-climb-racing";
+  gameContainer.style.display = 'block';
 
-  // فول‌اسکرین ایتا بعد از نمایش بازی
-  if (window.Eitaa && Eitaa.WebApp) {
-    Eitaa.WebApp.requestFullscreen();
-  }
-
+  eitaaFullscreen(); // فول‌اسکرین حتما بعد از نمایش بازی
   checkOrientation();
 }, 8500);
+
 </script>
 
 </body>
