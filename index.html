@@ -5,120 +5,146 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>شاخص آلودگی هوای ایران</title>
 
+<!-- فونت وزیر -->
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.min.css" rel="stylesheet">
 
 <style>
 *{margin:0;padding:0;box-sizing:border-box;font-family:Vazirmatn,Tahoma;}
-body{background:linear-gradient(135deg,#e3f2fd,#ede7f6);color:#222;}
-header{text-align:center;padding:16px;font-size:26px;font-weight:900;color:#1e88e5;}
-main{max-width:1000px;margin:auto;padding:12px;display:none;}
-footer{text-align:center;padding:14px;color:#555;font-size:14px}
+body{background:linear-gradient(135deg,#e3f2fd,#ede7f6);color:#222;overflow-x:hidden;padding:20px;}
+header{text-align:center;font-size:26px;font-weight:900;margin-bottom:20px;color:#1e88e5;}
 
-/* Loader */
-#loader{position:fixed;inset:0;background:#f5f9ff;display:flex;flex-direction:column;justify-content:center;align-items:center;z-index:9999}
-.spinner{width:60px;height:60px;border:6px solid #bbdefb;border-top-color:#1e88e5;border-radius:50%;animation:spin 1s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
+/* ===== Box جستجو ===== */
+.box{max-width:420px;margin:auto;background:rgba(255,255,255,0.7);padding:20px;border-radius:16px;box-shadow:0 15px 35px rgba(0,0,0,0.15);backdrop-filter:blur(10px);transition:0.3s;}
+.box input, .box button{width:100%;padding:12px;margin-top:10px;border-radius:12px;border:none;font-size:16px;outline:none;transition:0.3s;box-shadow:0 8px 24px rgba(0,0,0,0.12);}
+.box input{background:rgba(255,255,255,0.9);}
+.box input:focus{transform:scale(1.03);box-shadow:0 12px 30px rgba(30,136,229,0.35);}
+.box button{background:#1e88e5;color:#fff;cursor:pointer;font-weight:700;}
+.box button:hover{background:#1565c0;}
+.result{margin-top:15px;font-size:18px;font-weight:900;text-align:center;}
 
-/* Search */
-.search-box{display:flex;justify-content:center;margin-bottom:20px}
-.search-box input{width:100%;max-width:360px;padding:12px;border-radius:16px;border:none;font-size:15px}
+/* ===== AQI Colors ===== */
+.good{color:#4caf50;font-weight:900;} 
+.mid{color:#ffc107;font-weight:900;} 
+.bad{color:#e53935;font-weight:900;}
 
-/* Cards */
-.list{display:grid;gap:14px}
-.card{display:flex;justify-content:space-between;align-items:center;padding:16px;border-radius:22px;background:rgba(255,255,255,0.6)}
-.city{font-size:18px;font-weight:900}
-.sub{font-size:13px;color:#555}
-.aqi-box{min-width:90px;text-align:center;padding:10px;border-radius:16px;color:#fff;font-weight:900}
-
-.good{background:#4caf50}
-.mid{background:#ffc107}
-.bad{background:#ff7043}
-.danger{background:#e53935}
+/* ===== لیست کارت‌ها ===== */
+.list{margin-top:20px;display:grid;gap:14px;}
+.card{padding:16px;border-radius:18px;background:rgba(255,255,255,0.55);backdrop-filter:blur(16px);box-shadow:0 15px 35px rgba(0,0,0,0.15);display:flex;justify-content:space-between;align-items:center;transition:0.3s;}
+.card:hover{transform:scale(1.02);box-shadow:0 18px 40px rgba(0,0,0,0.2);}
 </style>
 </head>
-
 <body>
-
-<div id="loader">
-  <div class="spinner"></div>
-</div>
 
 <header>شاخص آلودگی هوای ایران</header>
 
-<main>
-  <div class="search-box">
-    <input id="search" placeholder="جستجوی استان...">
-  </div>
+<div class="box">
+  <input id="city" placeholder="نام شهر (مثلاً یزد)">
+  <button onclick="run()">جستجو</button>
+  <div id="out" class="result">—</div>
+</div>
 
-  <div id="meanAQI">میانگین آلودگی کل ایران: --</div>
-  <div class="list" id="list"></div>
-</main>
+<div class="list" id="list"></div>
 
-<footer>ساخته شده با عشق ❤️</footer>
+<!-- SDK ایتا -->
+<script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
 
 <script>
-const STATE_API = "https://iran-locations-api.ir/api/v1/fa/states";
-const AQI_API = "https://air-quality-api.open-meteo.com/v1/air-quality";
-
-const list = document.getElementById("list");
-const meanDiv = document.getElementById("meanAQI");
-
-function cls(v){
-  if(v <= 50) return "aqi-box good";
-  if(v <= 100) return "aqi-box mid";
-  if(v <= 150) return "aqi-box bad";
-  return "aqi-box danger";
-}
-
-async function load(){
-  const res = await fetch(STATE_API);
-  const states = await res.json();
-
-  let aqiList = [];
-  list.innerHTML = "";
-
-  for(const s of states){
-    const lat = s.latitude;
-    const lon = s.longitude;
-
-    const r = await fetch(`${AQI_API}?latitude=${lat}&longitude=${lon}&hourly=us_aqi`);
-    const j = await r.json();
-    const aqi = j?.hourly?.us_aqi?.[0] ?? "--";
-
-    if(aqi !== "--") aqiList.push(aqi);
-
-    const card = document.createElement("div");
-    card.className = "card";
-    card.innerHTML = `
-      <div>
-        <div class="city">${s.name}</div>
-        <div class="sub">مرکز: ${s.center}</div>
-      </div>
-      <div class="${cls(aqi)}">${aqi}</div>
-    `;
-    list.appendChild(card);
-  }
-
-  if(aqiList.length){
-    const avg = (aqiList.reduce((a,b)=>a+b,0)/aqiList.length).toFixed(1);
-    meanDiv.innerText = `میانگین آلودگی کل ایران: ${avg}`;
-  }
-}
-
-document.getElementById("search").addEventListener("input",e=>{
-  const q = e.target.value.trim();
-  document.querySelectorAll(".card").forEach(c=>{
-    c.style.display = c.innerText.includes(q) ? "flex" : "none";
-  });
-});
-
-window.onload = ()=>{
-  setTimeout(()=>{
-    loader.style.display="none";
-    document.querySelector("main").style.display="block";
-    load();
-  },1500);
+const cities={
+"تهران":[35.6892,51.3890],"مشهد":[36.2605,59.6168],"اصفهان":[32.6546,51.6680],"شیراز":[29.5918,52.5837],
+"تبریز":[38.0962,46.2738],"کرج":[35.8400,51.0000],"اهواز":[31.3183,48.6706],"قم":[34.6401,50.8764],
+"رشت":[37.2808,49.5832],"بندرعباس":[27.1865,56.2808],"کرمان":[30.2839,57.0839],"یزد":[31.8974,54.3569],
+"ارومیه":[37.5483,45.0672],"اراک":[34.0917,49.6892],"سنندج":[35.3219,46.9862],"قزوین":[36.2688,50.0041],
+"خرم‌آباد":[33.4878,48.3550],"همدان":[34.8090,48.5150],"سمنان":[35.5753,53.3958],"زاهدان":[29.4963,60.8629],
+"گرگان":[36.8427,54.4448],"بوشهر":[28.9234,50.8203],"ایلام":[33.6370,46.4227],"بیرجند":[32.8649,59.2211]
 };
+
+const API="https://air-quality-api.open-meteo.com/v1/air-quality";
+const listDiv=document.getElementById("list");
+const out=document.getElementById("out");
+let rankingData={}; 
+let lastSearch=[]; 
+
+function getClass(aqi){
+  if(aqi<=50) return "good";
+  if(aqi<=100) return "mid";
+  return "bad";
+}
+
+async function loadAll(){
+  const promises=Object.entries(cities).map(async ([c,[lat,lon]])=>{
+    const r=await fetch(`${API}?latitude=${lat}&longitude=${lon}&hourly=us_aqi`);
+    const j=await r.json();
+    const aqi=j?.hourly?.us_aqi?.[0]??0;
+    rankingData[c]=aqi;
+    return {c,aqi};
+  });
+  await Promise.all(promises);
+  updateList();
+}
+
+function updateList(){
+  const sorted=Object.entries(rankingData).sort((a,b)=>b[1]-a[1]);
+  listDiv.innerHTML="";
+  sorted.forEach(([c,aqi],index)=>{
+    const card=document.createElement("div");
+    card.className="card";
+    card.innerHTML=`<div>${c} (رتبه: ${index+1})</div><div class="${getClass(aqi)}">${aqi}</div>`;
+    listDiv.appendChild(card);
+  });
+}
+
+async function run(){
+  const cityName=document.getElementById("city").value.trim();
+  if(!cityName){ alert("نام شهر را وارد کن"); return; }
+  out.innerText="در حال دریافت مختصات...";
+
+  const geo=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${cityName},Iran`).then(r=>r.json());
+  if(!geo.length){ out.innerText="❌ شهر پیدا نشد"; return; }
+  const lat=geo[0].lat;
+  const lon=geo[0].lon;
+  const name=geo[0].display_name.split(",")[0];
+
+  out.innerText="در حال دریافت آلودگی هوا...";
+  const air=await fetch(`${API}?latitude=${lat}&longitude=${lon}&hourly=us_aqi`).then(r=>r.json());
+  const aqi=air?.hourly?.us_aqi?.[0];
+  if(!aqi){ out.innerText="❌ داده‌ای موجود نیست"; return; }
+
+  rankingData[name]=aqi;
+  const sortedCities=Object.entries(rankingData).sort((a,b)=>b[1]-a[1]);
+  const rank=sortedCities.findIndex(([c,_])=>c===name)+1;
+
+  out.innerHTML=`${name}<br>AQI: <span class="${getClass(aqi)}">${aqi}</span><br>رتبه در ایران: ${rank}`;
+
+  lastSearch.unshift({name,aqi,rank});
+  if(lastSearch.length>3) lastSearch.pop();
+
+  lastSearch.forEach((s,i)=>{
+    const el=document.createElement("div");
+    el.className="card";
+    el.innerHTML=`<div>${s.name} (رتبه: ${s.rank})</div><div class="${getClass(s.aqi)}">${s.aqi}</div>`;
+    listDiv.insertBefore(el,listDiv.firstChild);
+  });
+
+  updateList();
+}
+
+loadAll();
+
+// ======= ایتا SDK فول‌اسکرین و پیام خروج =======
+if(window.Eitaa && Eitaa.WebApp){
+    Eitaa.WebApp.ready();
+
+    // فول‌اسکرین بعد از لمس یا کلیک
+    document.addEventListener("touchstart",()=>{Eitaa.WebApp.requestFullscreen();},{once:true});
+    document.addEventListener("click",()=>{Eitaa.WebApp.requestFullscreen();},{once:true});
+
+    // پیام هنگام خروج
+    if(Eitaa.WebApp.onClose){
+        Eitaa.WebApp.onClose(()=>{
+            alert("⚠️ میخواید از برنامه خارج بشید؟");
+        });
+    }
+}
 </script>
 
 </body>
