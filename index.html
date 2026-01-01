@@ -1,113 +1,129 @@
 <!DOCTYPE html>
-<html lang="fa">
+<html lang="fa" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>بازی حافظه تصویری</title>
-<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.min.css" rel="stylesheet">
+
+<!-- فونت -->
+<link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css" rel="stylesheet">
+
 <style>
-body {
-  font-family: Vazir, sans-serif;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background: linear-gradient(135deg,#a1c4fd,#c2e9fb);
-  min-height: 100vh;
-  margin: 0;
+body{
+  margin:0; padding:0; font-family: Vazir, sans-serif; background: #121621; color:#fff; display:flex; flex-direction:column; align-items:center;
 }
-h1 { color:#007bff; margin-bottom: 20px; text-shadow: 1px 1px 4px #888; }
-#loader {
-  position: fixed;
-  inset: 0;
-  background:#121621;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  color:#00bfff;
-  font-size:24px;
-  z-index:1000;
+.loader{
+  position:fixed; inset:0; background:#121621; display:flex; justify-content:center; align-items:center; flex-direction:column; z-index:999;
 }
-#game { display:grid; grid-template-columns: repeat(4, 80px); gap:12px; margin-bottom: 30px; }
-.card {
-  width:80px; height:80px; background:#ccc;
-  display:flex; justify-content:center; align-items:center;
-  font-size:30px; cursor:pointer; border-radius:12px;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
-  transition: transform 0.2s, background 0.3s;
+.loader h1{
+  color:#00bfff; text-shadow:0 0 10px #2760fe; margin-bottom:20px;
 }
-.card:hover { transform: scale(1.05); }
-.flipped { background:#fff; color:#000; }
-.matched { background:#28a745; color:#fff; cursor:default; box-shadow: 0 0 15px #28a745; }
-button {
-  padding: 12px 20px; border:none; border-radius:12px;
-  font-size:16px; font-weight:700;
-  background:#007bff; color:#fff; cursor:pointer;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-  transition: background 0.3s, transform 0.2s;
+.loader span{
+  display:inline-block; width:50px; height:50px; border-radius:50%; background:linear-gradient(45deg,#2760fe,#2f71ff);
+  margin:5px; animation:spin 1s linear infinite;
 }
-button:hover { background:#0056b3; transform: scale(1.05); }
+@keyframes spin{
+  0%{transform:rotate(0deg);} 100%{transform:rotate(360deg);}
+}
+
+.game-container{
+  display:none; margin-top:20px; text-align:center;
+}
+.grid{
+  display:grid; grid-template-columns: repeat(4, 80px); gap:15px; justify-content:center; margin-bottom:20px;
+}
+.card{
+  width:80px; height:80px; background:#222; border-radius:12px; display:flex; justify-content:center; align-items:center;
+  font-size:32px; cursor:pointer; user-select:none; transition:0.3s;
+}
+.card.flipped{
+  background:#00bfff; color:#121621;
+}
+button{
+  padding:10px 20px; font-size:16px; border:none; border-radius:10px; cursor:pointer; background:#00bfff; color:#121621; font-weight:bold;
+  transition:0.3s;
+}
+button:hover{background:#2760fe;}
 </style>
 </head>
 <body>
 
-<div id="loader">در حال آماده‌سازی بازی...</div>
+<!-- لودر -->
+<div class="loader" id="loader">
+  <h1>در حال آماده‌سازی بازی...</h1>
+  <div><span></span><span></span><span></span></div>
+</div>
 
-<h1>بازی حافظه تصویری</h1>
-<div id="game"></div>
-<button onclick="startGame()">شروع دوباره</button>
+<div class="game-container" id="game">
+  <div class="grid" id="grid"></div>
+  <button onclick="startGame()">شروع دوباره</button>
+</div>
 
 <script>
-const symbols = ["🍎","🍌","🍒","🍇","🍉","🥝","🍍","🍑"];
-let cards = [];
-let flipped = [];
-let matchedCount = 0;
+const symbols = ['🍎','🍌','🍇','🍉','🍓','🍒','🥝','🍍'];
+let cards=[], first=null, second=null, lock=false;
 
-function startGame() {
-  const game = document.getElementById("game");
-  game.innerHTML = "";
-  flipped = [];
-  matchedCount = 0;
-  cards = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
-  cards.forEach(sym => {
-    const card = document.createElement("div");
-    card.className = "card";
-    card.dataset.symbol = sym;
-    card.addEventListener("click", () => flipCard(card));
-    game.appendChild(card);
+function shuffle(arr){return arr.sort(()=>Math.random()-0.5);}
+
+function createGrid(){
+  const grid=document.getElementById('grid');
+  grid.innerHTML='';
+  cards = shuffle([...symbols,...symbols]);
+  cards.forEach((sym,index)=>{
+    const card=document.createElement('div');
+    card.className='card';
+    card.dataset.symbol=sym;
+    card.innerText='';
+    card.addEventListener('click',flipCard);
+    grid.appendChild(card);
   });
 }
 
-function flipCard(card) {
-  if (card.classList.contains("flipped") || card.classList.contains("matched")) return;
-  card.classList.add("flipped");
-  card.textContent = card.dataset.symbol;
-  flipped.push(card);
+function showAllTemp(){
+  document.querySelectorAll('.card').forEach(c=>{
+    c.innerText=c.dataset.symbol; 
+    c.classList.add('flipped');
+  });
+  setTimeout(()=>{document.querySelectorAll('.card').forEach(c=>{
+    c.innerText=''; c.classList.remove('flipped');
+  }); lock=false;}, 2000);
+}
 
-  if (flipped.length === 2) {
-    if (flipped[0].dataset.symbol === flipped[1].dataset.symbol) {
-      flipped.forEach(c => c.classList.add("matched"));
-      matchedCount += 2;
-      flipped = [];
-      if (matchedCount === cards.length) alert("🎉 شما برنده شدید!");
+function flipCard(){
+  if(lock || this.classList.contains('flipped')) return;
+  this.classList.add('flipped');
+  this.innerText=this.dataset.symbol;
+
+  if(!first) first=this;
+  else if(!second){
+    second=this;
+    if(first.dataset.symbol===second.dataset.symbol){
+      first=second=null;
     } else {
-      setTimeout(() => {
-        flipped.forEach(c => {
-          c.classList.remove("flipped");
-          c.textContent = "";
-        });
-        flipped = [];
-      }, 800);
+      lock=true;
+      setTimeout(()=>{
+        first.innerText=''; first.classList.remove('flipped');
+        second.innerText=''; second.classList.remove('flipped');
+        first=second=null;
+        lock=false;
+      },1000);
     }
   }
 }
 
-// نمایش لودر کوتاه قبل از شروع بازی
-window.addEventListener("load", () => {
-  setTimeout(() => {
-    document.getElementById("loader").style.display = "none";
+function startGame(){
+  createGrid();
+  showAllTemp();
+}
+
+// نمایش لودر و سپس شروع بازی
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    document.getElementById('loader').style.display='none';
+    const gameDiv=document.getElementById('game');
+    gameDiv.style.display='block';
     startGame();
-  }, 1500);
+  }, 2500);
 });
 </script>
 
