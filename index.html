@@ -1,150 +1,114 @@
 <!DOCTYPE html>
-<html lang="fa" dir="rtl">
+<html lang="fa">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>شاخص آلودگی هوای ایران</title>
-
-<!-- فونت وزیر -->
+<title>بازی حافظه تصویری</title>
 <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.min.css" rel="stylesheet">
-
 <style>
-*{margin:0;padding:0;box-sizing:border-box;font-family:Vazirmatn,Tahoma;}
-body{background:linear-gradient(135deg,#e3f2fd,#ede7f6);color:#222;overflow-x:hidden;padding:20px;}
-header{text-align:center;font-size:26px;font-weight:900;margin-bottom:20px;color:#1e88e5;}
-
-/* ===== Box جستجو ===== */
-.box{max-width:420px;margin:auto;background:rgba(255,255,255,0.7);padding:20px;border-radius:16px;box-shadow:0 15px 35px rgba(0,0,0,0.15);backdrop-filter:blur(10px);transition:0.3s;}
-.box input, .box button{width:100%;padding:12px;margin-top:10px;border-radius:12px;border:none;font-size:16px;outline:none;transition:0.3s;box-shadow:0 8px 24px rgba(0,0,0,0.12);}
-.box input{background:rgba(255,255,255,0.9);}
-.box input:focus{transform:scale(1.03);box-shadow:0 12px 30px rgba(30,136,229,0.35);}
-.box button{background:#1e88e5;color:#fff;cursor:pointer;font-weight:700;}
-.box button:hover{background:#1565c0;}
-.result{margin-top:15px;font-size:18px;font-weight:900;text-align:center;}
-
-/* ===== AQI Colors ===== */
-.good{color:#4caf50;font-weight:900;} 
-.mid{color:#ffc107;font-weight:900;} 
-.bad{color:#e53935;font-weight:900;}
-
-/* ===== لیست کارت‌ها ===== */
-.list{margin-top:20px;display:grid;gap:14px;}
-.card{padding:16px;border-radius:18px;background:rgba(255,255,255,0.55);backdrop-filter:blur(16px);box-shadow:0 15px 35px rgba(0,0,0,0.15);display:flex;justify-content:space-between;align-items:center;transition:0.3s;}
-.card:hover{transform:scale(1.02);box-shadow:0 18px 40px rgba(0,0,0,0.2);}
+body {
+  font-family: Vazir, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
+  background: linear-gradient(135deg,#a1c4fd,#c2e9fb);
+  min-height: 100vh;
+  margin: 0;
+}
+h1 { color:#007bff; margin-bottom: 20px; text-shadow: 1px 1px 4px #888; }
+#loader {
+  position: fixed;
+  inset: 0;
+  background:#121621;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:#00bfff;
+  font-size:24px;
+  z-index:1000;
+}
+#game { display:grid; grid-template-columns: repeat(4, 80px); gap:12px; margin-bottom: 30px; }
+.card {
+  width:80px; height:80px; background:#ccc;
+  display:flex; justify-content:center; align-items:center;
+  font-size:30px; cursor:pointer; border-radius:12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+  transition: transform 0.2s, background 0.3s;
+}
+.card:hover { transform: scale(1.05); }
+.flipped { background:#fff; color:#000; }
+.matched { background:#28a745; color:#fff; cursor:default; box-shadow: 0 0 15px #28a745; }
+button {
+  padding: 12px 20px; border:none; border-radius:12px;
+  font-size:16px; font-weight:700;
+  background:#007bff; color:#fff; cursor:pointer;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  transition: background 0.3s, transform 0.2s;
+}
+button:hover { background:#0056b3; transform: scale(1.05); }
 </style>
 </head>
 <body>
 
-<header>شاخص آلودگی هوای ایران</header>
+<div id="loader">در حال آماده‌سازی بازی...</div>
 
-<div class="box">
-  <input id="city" placeholder="نام شهر (مثلاً یزد)">
-  <button onclick="run()">جستجو</button>
-  <div id="out" class="result">—</div>
-</div>
-
-<div class="list" id="list"></div>
-
-<!-- SDK ایتا -->
-<script src="https://developer.eitaa.com/eitaa-web-app.js"></script>
+<h1>بازی حافظه تصویری</h1>
+<div id="game"></div>
+<button onclick="startGame()">شروع دوباره</button>
 
 <script>
-const cities={
-"تهران":[35.6892,51.3890],"مشهد":[36.2605,59.6168],"اصفهان":[32.6546,51.6680],"شیراز":[29.5918,52.5837],
-"تبریز":[38.0962,46.2738],"کرج":[35.8400,51.0000],"اهواز":[31.3183,48.6706],"قم":[34.6401,50.8764],
-"رشت":[37.2808,49.5832],"بندرعباس":[27.1865,56.2808],"کرمان":[30.2839,57.0839],"یزد":[31.8974,54.3569],
-"ارومیه":[37.5483,45.0672],"اراک":[34.0917,49.6892],"سنندج":[35.3219,46.9862],"قزوین":[36.2688,50.0041],
-"خرم‌آباد":[33.4878,48.3550],"همدان":[34.8090,48.5150],"سمنان":[35.5753,53.3958],"زاهدان":[29.4963,60.8629],
-"گرگان":[36.8427,54.4448],"بوشهر":[28.9234,50.8203],"ایلام":[33.6370,46.4227],"بیرجند":[32.8649,59.2211]
-};
+const symbols = ["🍎","🍌","🍒","🍇","🍉","🥝","🍍","🍑"];
+let cards = [];
+let flipped = [];
+let matchedCount = 0;
 
-const API="https://air-quality-api.open-meteo.com/v1/air-quality";
-const listDiv=document.getElementById("list");
-const out=document.getElementById("out");
-let rankingData={}; 
-let lastSearch=[]; 
-
-function getClass(aqi){
-  if(aqi<=50) return "good";
-  if(aqi<=100) return "mid";
-  return "bad";
-}
-
-async function loadAll(){
-  const promises=Object.entries(cities).map(async ([c,[lat,lon]])=>{
-    const r=await fetch(`${API}?latitude=${lat}&longitude=${lon}&hourly=us_aqi`);
-    const j=await r.json();
-    const aqi=j?.hourly?.us_aqi?.[0]??0;
-    rankingData[c]=aqi;
-    return {c,aqi};
-  });
-  await Promise.all(promises);
-  updateList();
-}
-
-function updateList(){
-  const sorted=Object.entries(rankingData).sort((a,b)=>b[1]-a[1]);
-  listDiv.innerHTML="";
-  sorted.forEach(([c,aqi],index)=>{
-    const card=document.createElement("div");
-    card.className="card";
-    card.innerHTML=`<div>${c} (رتبه: ${index+1})</div><div class="${getClass(aqi)}">${aqi}</div>`;
-    listDiv.appendChild(card);
+function startGame() {
+  const game = document.getElementById("game");
+  game.innerHTML = "";
+  flipped = [];
+  matchedCount = 0;
+  cards = [...symbols, ...symbols].sort(() => Math.random() - 0.5);
+  cards.forEach(sym => {
+    const card = document.createElement("div");
+    card.className = "card";
+    card.dataset.symbol = sym;
+    card.addEventListener("click", () => flipCard(card));
+    game.appendChild(card);
   });
 }
 
-async function run(){
-  const cityName=document.getElementById("city").value.trim();
-  if(!cityName){ alert("نام شهر را وارد کن"); return; }
-  out.innerText="در حال دریافت مختصات...";
+function flipCard(card) {
+  if (card.classList.contains("flipped") || card.classList.contains("matched")) return;
+  card.classList.add("flipped");
+  card.textContent = card.dataset.symbol;
+  flipped.push(card);
 
-  const geo=await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${cityName},Iran`).then(r=>r.json());
-  if(!geo.length){ out.innerText="❌ شهر پیدا نشد"; return; }
-  const lat=geo[0].lat;
-  const lon=geo[0].lon;
-  const name=geo[0].display_name.split(",")[0];
-
-  out.innerText="در حال دریافت آلودگی هوا...";
-  const air=await fetch(`${API}?latitude=${lat}&longitude=${lon}&hourly=us_aqi`).then(r=>r.json());
-  const aqi=air?.hourly?.us_aqi?.[0];
-  if(!aqi){ out.innerText="❌ داده‌ای موجود نیست"; return; }
-
-  rankingData[name]=aqi;
-  const sortedCities=Object.entries(rankingData).sort((a,b)=>b[1]-a[1]);
-  const rank=sortedCities.findIndex(([c,_])=>c===name)+1;
-
-  out.innerHTML=`${name}<br>AQI: <span class="${getClass(aqi)}">${aqi}</span><br>رتبه در ایران: ${rank}`;
-
-  lastSearch.unshift({name,aqi,rank});
-  if(lastSearch.length>3) lastSearch.pop();
-
-  lastSearch.forEach((s,i)=>{
-    const el=document.createElement("div");
-    el.className="card";
-    el.innerHTML=`<div>${s.name} (رتبه: ${s.rank})</div><div class="${getClass(s.aqi)}">${s.aqi}</div>`;
-    listDiv.insertBefore(el,listDiv.firstChild);
-  });
-
-  updateList();
-}
-
-loadAll();
-
-// ======= ایتا SDK فول‌اسکرین و پیام خروج =======
-if(window.Eitaa && Eitaa.WebApp){
-    Eitaa.WebApp.ready();
-
-    // فول‌اسکرین بعد از لمس یا کلیک
-    document.addEventListener("touchstart",()=>{Eitaa.WebApp.requestFullscreen();},{once:true});
-    document.addEventListener("click",()=>{Eitaa.WebApp.requestFullscreen();},{once:true});
-
-    // پیام هنگام خروج
-    if(Eitaa.WebApp.onClose){
-        Eitaa.WebApp.onClose(()=>{
-            alert("⚠️ میخواید از برنامه خارج بشید؟");
+  if (flipped.length === 2) {
+    if (flipped[0].dataset.symbol === flipped[1].dataset.symbol) {
+      flipped.forEach(c => c.classList.add("matched"));
+      matchedCount += 2;
+      flipped = [];
+      if (matchedCount === cards.length) alert("🎉 شما برنده شدید!");
+    } else {
+      setTimeout(() => {
+        flipped.forEach(c => {
+          c.classList.remove("flipped");
+          c.textContent = "";
         });
+        flipped = [];
+      }, 800);
     }
+  }
 }
+
+// نمایش لودر کوتاه قبل از شروع بازی
+window.addEventListener("load", () => {
+  setTimeout(() => {
+    document.getElementById("loader").style.display = "none";
+    startGame();
+  }, 1500);
+});
 </script>
 
 </body>
