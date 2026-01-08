@@ -293,8 +293,8 @@
         
         <div id="cards-container" class="cards-container"></div>
         
-        <button class="btn btn-danger" onclick="endGame()">
-            پایان بازی
+        <button class="btn btn-danger" onclick="showScreen('level-select')">
+            بازگشت
         </button>
     </div>
 
@@ -446,7 +446,7 @@
                 
                 const back = document.createElement('div');
                 back.className = 'card-back';
-                back.textContent = cardValues[i]; // اینجا ایموجی میوه قرار می‌گیرد
+                back.textContent = cardValues[i];
                 
                 card.appendChild(front);
                 card.appendChild(back);
@@ -542,10 +542,32 @@
             showScreen('result-screen');
         }
         
-        // شروع
-        window.onload = function() {
-            showScreen('main-menu');
+        // مدیریت دکمه بازگشت مرورگر
+        window.onpopstate = function(event) {
+            if (event.state && event.state.screen) {
+                showScreen(event.state.screen);
+            } else {
+                showScreen('main-menu');
+            }
         };
+        
+        // تغییر صفحه با مدیریت history
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active');
+            });
+            document.getElementById(screenId).classList.add('active');
+            
+            // اضافه کردن state به history برای مدیریت دکمه بازگشت
+            history.pushState({ screen: screenId }, '', `#${screenId}`);
+            
+            if (screenId === 'game-screen') {
+                initGame();
+            }
+        }
+        
+        // مقداردهی اولیه state
+        history.replaceState({ screen: 'main-menu' }, '', '#main-menu');
     </script>
 </body>
-</html>
+    </html>
