@@ -1,573 +1,204 @@
 <!DOCTYPE html>
 <html lang="fa" dir="rtl">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>بازی حافظه میوه ای</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>بازی حافظه میوه ای</title>
 
-        body {
-            background: linear-gradient(135deg, #5f2c82, #49a09d);
-            min-height: 100vh;
-            color: white;
-            padding: 20px;
-            overflow-x: hidden;
-        }
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI',Tahoma}
+body{
+background:linear-gradient(135deg,#5f2c82,#49a09d);
+min-height:100vh;color:white;padding:20px;overflow-x:hidden
+}
+.screen{display:none;max-width:600px;margin:0 auto}
+.active{display:block}
+.header{text-align:center;margin-bottom:30px;padding:20px}
+h1{
+font-size:2.5rem;margin-bottom:10px;
+background:linear-gradient(45deg,#ff9a9e,#fad0c4);
+-webkit-background-clip:text;-webkit-text-fill-color:transparent
+}
+.btn{
+display:block;width:100%;max-width:300px;margin:15px auto;
+padding:15px;border:none;border-radius:12px;
+font-size:1.2rem;font-weight:bold;cursor:pointer
+}
+.btn-primary{background:linear-gradient(45deg,#ff9a9e,#fad0c4);color:white}
+.btn-danger{background:linear-gradient(45deg,#ff6b6b,#ffa8a8);color:white}
 
-        .screen {
-            display: none;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+.level-card{
+background:rgba(255,255,255,.1);border-radius:15px;
+padding:20px;margin:20px auto;max-width:300px;
+text-align:center;cursor:pointer
+}
 
-        .active {
-            display: block;
-        }
+.cards-container{
+display:grid;gap:10px;justify-content:center;margin:30px 0
+}
 
-        .header {
-            text-align: center;
-            margin-bottom: 30px;
-            padding: 20px;
-        }
+.card{
+width:80px;height:80px;border-radius:12px;
+cursor:pointer;position:relative;
+transform-style:preserve-3d;
+transition:transform .5s;font-size:2.5rem;
+display:flex;align-items:center;justify-content:center
+}
 
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+.easy .card{background:rgba(76,175,80,.3)}
+.medium .card{background:rgba(255,152,0,.3)}
+.hard .card{background:rgba(244,67,54,.3)}
 
-        .btn {
-            display: block;
-            width: 100%;
-            max-width: 300px;
-            margin: 15px auto;
-            padding: 15px;
-            border: none;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: transform 0.3s;
-        }
+.card.flipped{transform:rotateY(180deg)}
+.card.matched{opacity:.5}
 
-        .btn:hover {
-            transform: translateY(-3px);
-        }
-
-        .btn-primary {
-            background: linear-gradient(45deg, #ff9a9e, #fad0c4);
-            color: white;
-        }
-
-        .btn-danger {
-            background: linear-gradient(45deg, #ff6b6b, #ffa8a8);
-            color: white;
-        }
-
-        .level-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 20px;
-            margin: 20px auto;
-            max-width: 300px;
-            text-align: center;
-            cursor: pointer;
-            transition: transform 0.3s;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .level-card:hover {
-            transform: translateY(-5px);
-            border-color: rgba(255, 255, 255, 0.4);
-        }
-
-        .level-title {
-            font-size: 1.5rem;
-            margin-bottom: 10px;
-        }
-
-        .game-info {
-            display: flex;
-            justify-content: space-around;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 15px;
-            margin: 20px 0;
-        }
-
-        .info-item {
-            text-align: center;
-        }
-
-        .info-value {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #ffd166;
-        }
-
-        /* کارت‌های بازی */
-        .cards-container {
-            display: grid;
-            gap: 10px;
-            justify-content: center;
-            margin: 30px 0;
-        }
-
-        .card {
-            width: 80px;
-            height: 80px;
-            border-radius: 12px;
-            cursor: pointer;
-            position: relative;
-            transform-style: preserve-3d;
-            transition: transform 0.5s;
-            font-size: 2.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* رنگ‌های سطح */
-        .easy .card {
-            background: rgba(76, 175, 80, 0.3);
-            border: 2px solid rgba(76, 175, 80, 0.6);
-            box-shadow: 0 0 20px rgba(76, 175, 80, 0.4);
-        }
-
-        .medium .card {
-            background: rgba(255, 152, 0, 0.3);
-            border: 2px solid rgba(255, 152, 0, 0.6);
-            box-shadow: 0 0 20px rgba(255, 152, 0, 0.4);
-        }
-
-        .hard .card {
-            background: rgba(244, 67, 54, 0.3);
-            border: 2px solid rgba(244, 67, 54, 0.6);
-            box-shadow: 0 0 20px rgba(244, 67, 54, 0.4);
-        }
-
-        .card.flipped {
-            transform: rotateY(180deg);
-        }
-
-        .card.matched {
-            opacity: 0.5;
-            cursor: default;
-        }
-
-        .card-front, .card-back {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            backface-visibility: hidden;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .card-front {
-            background: linear-gradient(135deg, #a1c4fd, #c2e9fb);
-            color: rgba(255, 255, 255, 0.9);
-        }
-
-        .card-back {
-            background: linear-gradient(135deg, #ff9a9e, #fad0c4);
-            transform: rotateY(180deg);
-            color: white;
-        }
-
-        .result-card {
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 15px;
-            padding: 30px;
-            margin: 30px auto;
-            max-width: 400px;
-            text-align: center;
-        }
-
-        .result-title {
-            font-size: 2rem;
-            color: #4cd964;
-            margin-bottom: 20px;
-        }
-
-        .result-stats {
-            margin: 20px 0;
-        }
-
-        .result-stat {
-            display: flex;
-            justify-content: space-between;
-            padding: 10px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-        }
-
-        .footer {
-            text-align: center;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(255, 255, 255, 0.2);
-        }
-    </style>
+.card-front,.card-back{
+position:absolute;width:100%;height:100%;
+backface-visibility:hidden;border-radius:10px;
+display:flex;align-items:center;justify-content:center
+}
+.card-front{background:#a1c4fd}
+.card-back{background:#ff9a9e;transform:rotateY(180deg)}
+</style>
 </head>
+
 <body>
-    <!-- صفحه منوی اصلی -->
-    <div id="main-menu" class="screen active">
-        <div class="header">
-            <h1>بازی حافظه میوه ای</h1>
-            <p>حافظه خود را با میوه‌های رنگارنگ محک بزنید!</p>
-        </div>
-        
-        <button class="btn btn-primary" onclick="showScreen('level-select')">
-            شروع بازی
-        </button>
-        
-        <button class="btn" onclick="showInstructions()">
-            راهنما
-        </button>
-        
-        <div class="footer">
-            ساخته شده با ❤️
-        </div>
-    </div>
 
-    <!-- صفحه انتخاب سطح -->
-    <div id="level-select" class="screen">
-        <div class="header">
-            <h1>انتخاب سطح</h1>
-            <p>سطح دشواری بازی را انتخاب کنید</p>
-        </div>
-        
-        <div class="level-card" onclick="startGame('easy')">
-            <div class="level-title" style="color: #4CAF50;">آسان</div>
-            <p>12 کارت - 60 ثانیه</p>
-            <p>مناسب برای شروع</p>
-        </div>
-        
-        <div class="level-card" onclick="startGame('medium')">
-            <div class="level-title" style="color: #FF9800;">متوسط</div>
-            <p>16 کارت - 90 ثانیه</p>
-            <p>چالش مناسب</p>
-        </div>
-        
-        <div class="level-card" onclick="startGame('hard')">
-            <div class="level-title" style="color: #F44336;">سخت</div>
-            <p>20 کارت - 120 ثانیه</p>
-            <p>برای حافظه‌های قوی</p>
-        </div>
-        
-        <button class="btn btn-danger" onclick="showScreen('main-menu')">
-            بازگشت به منو
-        </button>
-    </div>
+<!-- منو -->
+<div id="main-menu" class="screen active">
+<div class="header">
+<h1>بازی حافظه میوه ای</h1>
+<p>حافظه خود را محک بزنید</p>
+</div>
+<button class="btn btn-primary" onclick="showScreen('level-select')">شروع بازی</button>
+</div>
 
-    <!-- صفحه بازی -->
-    <div id="game-screen" class="screen">
-        <div class="header">
-            <h1 id="game-title">بازی حافظه</h1>
-        </div>
-        
-        <div class="game-info">
-            <div class="info-item">
-                <div>زمان</div>
-                <div class="info-value" id="timer">60</div>
-            </div>
-            <div class="info-item">
-                <div>حرکات</div>
-                <div class="info-value" id="moves">0</div>
-            </div>
-            <div class="info-item">
-                <div>جفت‌ها</div>
-                <div class="info-value" id="matches">0/0</div>
-            </div>
-        </div>
-        
-        <div id="cards-container" class="cards-container"></div>
-        
-        <button class="btn btn-danger" onclick="showScreen('level-select')">
-            بازگشت
-        </button>
-    </div>
+<!-- انتخاب سطح -->
+<div id="level-select" class="screen">
+<div class="header"><h1>انتخاب سطح</h1></div>
 
-    <!-- صفحه نتیجه -->
-    <div id="result-screen" class="screen">
-        <div class="header">
-            <h1>تبریک!</h1>
-        </div>
-        
-        <div class="result-card">
-            <div class="result-title" id="result-message">🎉 آفرین!</div>
-            
-            <div class="result-stats">
-                <div class="result-stat">
-                    <span>زمان باقی‌مانده:</span>
-                    <span class="info-value" id="result-time">0</span>
-                </div>
-                <div class="result-stat">
-                    <span>تعداد حرکات:</span>
-                    <span class="info-value" id="result-moves">0</span>
-                </div>
-                <div class="result-stat">
-                    <span>امتیاز:</span>
-                    <span class="info-value" id="result-score">0</span>
-                </div>
-            </div>
-            
-            <button class="btn btn-primary" onclick="showScreen('level-select')">
-                بازی مجدد
-            </button>
-            
-            <button class="btn" onclick="showScreen('main-menu')" style="margin-top: 10px;">
-                منوی اصلی
-            </button>
-        </div>
-    </div>
+<div class="level-card" onclick="startGame('easy')">آسان</div>
+<div class="level-card" onclick="startGame('medium')">متوسط</div>
+<div class="level-card" onclick="startGame('hard')">سخت</div>
 
-    <script>
-        // متغیرهای بازی
-        let currentLevel = 'easy';
-        let cards = [];
-        let flippedCards = [];
-        let matchedPairs = 0;
-        let totalPairs = 0;
-        let moves = 0;
-        let gameTime = 60;
-        let timerInterval;
-        let canFlip = true;
-        
-        // تنظیمات سطوح
-        const levelConfig = {
-            easy: { cards: 12, time: 60, rows: 3, cols: 4 },
-            medium: { cards: 16, time: 90, rows: 4, cols: 4 },
-            hard: { cards: 20, time: 120, rows: 5, cols: 4 }
-        };
-        
-        // ایموجی میوه‌ها
-        const fruitEmojis = ["🍎", "🍌", "🍒", "🍓", "🍊", "🍇", "🍉", "🍑", "🍈", "🍏"];
-        
-        // تغییر صفحه
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-            
-            if (screenId === 'game-screen') {
-                initGame();
-            }
-        }
-        
-        // راهنما
-        function showInstructions() {
-            alert('🎮 راهنمای بازی:\n\n1. سطح بازی را انتخاب کنید\n2. کارت‌های میوه‌ای به مدت 2 ثانیه نمایش داده می‌شوند\n3. کارت‌ها را کلیک کنید تا جفت‌های مشابه پیدا کنید\n4. با کمترین حرکت و بیشترین زمان برنده شوید!');
-        }
-        
-        // شروع بازی
-        function startGame(level) {
-            currentLevel = level;
-            showScreen('game-screen');
-        }
-        
-        // مقداردهی اولیه بازی
-        function initGame() {
-            const config = levelConfig[currentLevel];
-            gameTime = config.time;
-            totalPairs = config.cards / 2;
-            matchedPairs = 0;
-            moves = 0;
-            flippedCards = [];
-            
-            // بروزرسانی اطلاعات
-            document.getElementById('timer').textContent = gameTime;
-            document.getElementById('moves').textContent = moves;
-            document.getElementById('matches').textContent = `0/${totalPairs}`;
-            document.getElementById('game-title').textContent = `بازی حافظه - سطح ${getLevelName(currentLevel)}`;
-            
-            // ایجاد کارت‌ها
-            createCards();
-            
-            // شروع تایمر
-            clearInterval(timerInterval);
-            timerInterval = setInterval(() => {
-                gameTime--;
-                document.getElementById('timer').textContent = gameTime;
-                if (gameTime <= 0) {
-                    endGame();
-                }
-            }, 1000);
-            
-            // نمایش موقت کارت‌ها
-            showCardsTemporarily();
-        }
-        
-        // نام سطح
-        function getLevelName(level) {
-            const names = { easy: 'آسان', medium: 'متوسط', hard: 'سخت' };
-            return names[level];
-        }
-        
-        // ایجاد کارت‌ها
-        function createCards() {
-            const container = document.getElementById('cards-container');
-            container.innerHTML = '';
-            container.className = 'cards-container ' + currentLevel;
-            
-            const config = levelConfig[currentLevel];
-            container.style.gridTemplateColumns = `repeat(${config.cols}, 1fr)`;
-            
-            // انتخاب میوه‌ها
-            const selectedFruits = [];
-            for (let i = 0; i < totalPairs; i++) {
-                selectedFruits.push(fruitEmojis[i % fruitEmojis.length]);
-            }
-            
-            // ایجاد جفت‌ها و مخلوط کردن
-            let cardValues = [...selectedFruits, ...selectedFruits];
-            cardValues = shuffleArray(cardValues);
-            
-            cards = [];
-            for (let i = 0; i < cardValues.length; i++) {
-                const card = document.createElement('div');
-                card.className = 'card';
-                card.dataset.value = cardValues[i];
-                
-                const front = document.createElement('div');
-                front.className = 'card-front';
-                front.textContent = '?';
-                
-                const back = document.createElement('div');
-                back.className = 'card-back';
-                back.textContent = cardValues[i];
-                
-                card.appendChild(front);
-                card.appendChild(back);
-                
-                card.addEventListener('click', () => flipCard(card));
-                container.appendChild(card);
-                cards.push(card);
-            }
-        }
-        
-        // مخلوط کردن آرایه
-        function shuffleArray(array) {
-            for (let i = array.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [array[i], array[j]] = [array[j], array[i]];
-            }
-            return array;
-        }
-        
-        // نمایش موقت کارت‌ها
-        function showCardsTemporarily() {
-            canFlip = false;
-            cards.forEach(card => card.classList.add('flipped'));
-            
-            setTimeout(() => {
-                cards.forEach(card => card.classList.remove('flipped'));
-                canFlip = true;
-            }, 2000);
-        }
-        
-        // برگرداندن کارت
-        function flipCard(card) {
-            if (!canFlip || card.classList.contains('flipped') || card.classList.contains('matched')) {
-                return;
-            }
-            
-            card.classList.add('flipped');
-            flippedCards.push(card);
-            
-            if (flippedCards.length === 2) {
-                canFlip = false;
-                moves++;
-                document.getElementById('moves').textContent = moves;
-                
-                const card1 = flippedCards[0];
-                const card2 = flippedCards[1];
-                
-                if (card1.dataset.value === card2.dataset.value) {
-                    // تطابق پیدا شد
-                    setTimeout(() => {
-                        card1.classList.add('matched');
-                        card2.classList.add('matched');
-                        matchedPairs++;
-                        document.getElementById('matches').textContent = `${matchedPairs}/${totalPairs}`;
-                        
-                        flippedCards = [];
-                        canFlip = true;
-                        
-                        if (matchedPairs === totalPairs) {
-                            setTimeout(endGame, 500);
-                        }
-                    }, 500);
-                } else {
-                    // تطابق پیدا نشد
-                    setTimeout(() => {
-                        card1.classList.remove('flipped');
-                        card2.classList.remove('flipped');
-                        flippedCards = [];
-                        canFlip = true;
-                    }, 1000);
-                }
-            }
-        }
-        
-        // پایان بازی
-        function endGame() {
-            clearInterval(timerInterval);
-            
-            // محاسبه امتیاز
-            const score = matchedPairs * 100 + gameTime * 10 - moves * 5;
-            
-            // نمایش نتایج
-            document.getElementById('result-time').textContent = gameTime;
-            document.getElementById('result-moves').textContent = moves;
-            document.getElementById('result-score').textContent = score;
-            
-            if (matchedPairs === totalPairs) {
-                document.getElementById('result-message').textContent = '🎉 آفرین! شما برنده شدید!';
-            } else {
-                document.getElementById('result-message').textContent = '⏰ زمان شما به پایان رسید!';
-            }
-            
-            showScreen('result-screen');
-        }
-        
-        // مدیریت دکمه بازگشت مرورگر
-        window.onpopstate = function(event) {
-            if (event.state && event.state.screen) {
-                showScreen(event.state.screen);
-            } else {
-                showScreen('main-menu');
-            }
-        };
-        
-        // تغییر صفحه با مدیریت history
-        function showScreen(screenId) {
-            document.querySelectorAll('.screen').forEach(screen => {
-                screen.classList.remove('active');
-            });
-            document.getElementById(screenId).classList.add('active');
-            
-            // اضافه کردن state به history برای مدیریت دکمه بازگشت
-            history.pushState({ screen: screenId }, '', `#${screenId}`);
-            
-            if (screenId === 'game-screen') {
-                initGame();
-            }
-        }
-        
-        // مقداردهی اولیه state
-        history.replaceState({ screen: 'main-menu' }, '', '#main-menu');
-    </script>
+<button class="btn btn-danger" onclick="showScreen('main-menu')">بازگشت</button>
+</div>
+
+<!-- بازی -->
+<div id="game-screen" class="screen">
+<div class="header">
+<h1 id="game-title"></h1>
+</div>
+
+<div id="cards-container" class="cards-container"></div>
+
+<button class="btn btn-danger" onclick="showScreen('level-select')">بازگشت</button>
+</div>
+
+<!-- نتیجه -->
+<div id="result-screen" class="screen">
+<div class="header"><h1 id="result-message"></h1></div>
+<button class="btn btn-primary" onclick="showScreen('level-select')">دوباره</button>
+<button class="btn" onclick="showScreen('main-menu')">منو</button>
+</div>
+
+<script>
+/* ================= متغیرها ================= */
+let currentLevel,cards=[],flipped=[],matches=0,totalPairs=0,timeLeft,timer;
+const levelConfig={
+easy:{cards:12,time:60,cols:4},
+medium:{cards:16,time:90,cols:4},
+hard:{cards:20,time:120,cols:4}
+};
+const fruits=["🍎","🍌","🍒","🍓","🍊","🍇","🍉","🍑","🍈","🍏"];
+
+/* ================= نمایش صفحه + BACK ================= */
+function showScreen(id,push=true){
+document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+document.getElementById(id).classList.add("active");
+if(push)history.pushState({screen:id},"",`#${id}`);
+if(id==="game-screen")initGame();
+}
+
+window.addEventListener("popstate",e=>{
+if(e.state&&e.state.screen){
+showScreen(e.state.screen,false);
+}else{
+showScreen("main-menu",false);
+}
+});
+
+history.replaceState({screen:"main-menu"},"","#main-menu");
+
+/* ================= شروع بازی ================= */
+function startGame(level){
+currentLevel=level;
+showScreen("game-screen");
+}
+
+function initGame(){
+clearInterval(timer);
+matches=0;flipped=[];
+const cfg=levelConfig[currentLevel];
+totalPairs=cfg.cards/2;
+timeLeft=cfg.time;
+
+document.getElementById("game-title").innerText="سطح "+currentLevel;
+
+const container=document.getElementById("cards-container");
+container.innerHTML="";
+container.className="cards-container "+currentLevel;
+container.style.gridTemplateColumns=`repeat(${cfg.cols},1fr)`;
+
+let values=[];
+for(let i=0;i<totalPairs;i++){
+values.push(fruits[i],fruits[i]);
+}
+values.sort(()=>Math.random()-.5);
+
+values.forEach(v=>{
+const card=document.createElement("div");
+card.className="card";
+card.dataset.val=v;
+card.innerHTML=`<div class="card-front">?</div><div class="card-back">${v}</div>`;
+card.onclick=()=>flipCard(card);
+container.appendChild(card);
+cards.push(card);
+});
+
+timer=setInterval(()=>{
+timeLeft--;
+if(timeLeft<=0)endGame(false);
+},1000);
+}
+
+/* ================= منطق کارت ================= */
+function flipCard(card){
+if(card.classList.contains("flipped")||flipped.length==2)return;
+card.classList.add("flipped");
+flipped.push(card);
+
+if(flipped.length==2){
+setTimeout(()=>{
+if(flipped[0].dataset.val===flipped[1].dataset.val){
+flipped.forEach(c=>c.classList.add("matched"));
+matches++;
+if(matches===totalPairs)endGame(true);
+}else{
+flipped.forEach(c=>c.classList.remove("flipped"));
+}
+flipped=[];
+},700);
+}
+}
+
+function endGame(win){
+clearInterval(timer);
+document.getElementById("result-message").innerText=
+win?"🎉 برنده شدی!":"⏰ زمان تموم شد";
+showScreen("result-screen");
+}
+</script>
+
 </body>
-    </html>
+</html>
